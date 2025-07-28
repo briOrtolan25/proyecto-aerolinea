@@ -1,0 +1,54 @@
+{% extends 'gestion/base.html' %}
+{% block title %}Reporte de Pasajeros{% endblock %}
+{% block content %}
+
+<h1>Pasajeros por Vuelo</h1>
+
+<form method="get">
+    <label for="vuelo_id">Seleccionar vuelo:</label>
+    <select name="vuelo_id" id="vuelo_id" required>
+        <option value="">-- Elegir vuelo --</option>
+        {% for vuelo in vuelos %}
+            <option value="{{ vuelo.id }}" {% if vuelo_seleccionado == vuelo.id|stringformat:"s" %}selected{% endif %}>
+                {{ vuelo.origen }} → {{ vuelo.destino }} ({{ vuelo.fecha_salida|date:"d/m/Y H:i" }})
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Ver Pasajeros</button>
+</form>
+
+{% if vuelo_seleccionado and reservas %}
+<div class="acciones" style="margin-top: 10px;">
+    <a href="{% url 'exportar_reporte_pdf' vuelo_seleccionado %}" target="_blank">📄 Descargar PDF</a>
+    <a href="{% url 'exportar_reporte_csv' vuelo_seleccionado %}" target="_blank">📊 Descargar CSV</a>
+</div>
+{% endif %}
+
+{% if reservas %}
+<table>
+    <thead>
+        <tr>
+            <th>Pasajero</th>
+            <th>Documento</th>
+            <th>Asiento</th>
+            <th>Precio</th>
+            <th>Código Reserva</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for reserva in reservas %}
+        <tr>
+            <td>{{ reserva.pasajero.nombre }}</td>
+            <td>{{ reserva.pasajero.documento }}</td>
+            <td>{{ reserva.asiento.numero }}</td>
+            <td>${{ reserva.precio }}</td>
+            <td>{{ reserva.codigo_reserva }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% elif vuelo_seleccionado %}
+    <p class="mensaje">No hay reservas para este vuelo.</p>
+{% endif %}
+
+{% endblock %}

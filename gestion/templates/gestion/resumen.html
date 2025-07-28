@@ -1,0 +1,17 @@
+{% extends 'gestion/base.html' %}
+{% load humanize %}
+
+{% block title %}Resumen General{% endblock %}
+
+{% block content %}
+<h1>Resumen del Sistema</h1>
+
+<ul style="font-size: 18px; list-style-type: none; padding: 0;">
+    <li>✈️ Total de vuelos: <strong>{{ total_vuelos }}</strong></li>
+    <li>🧾 Total de reservas: <strong>{{ total_reservas }}</strong></li>
+    <li>🧍‍♂️ Total de pasajeros registrados: <strong>{{ total_pasajeros }}</strong></li>
+    <li>💺 Asientos ocupados: <strong>{{ asientos_ocupados }}</strong></li>
+    <li>💺 Asientos disponibles: <strong>{{ asientos_disponibles }}</strong></li>
+    <li>💰 Ingresos totales: <strong>${{ ingresos_totales|intcomma }}</strong></li>
+</ul>
+{% endblock %}

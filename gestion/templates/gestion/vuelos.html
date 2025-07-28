@@ -1,0 +1,21 @@
+
+{% extends 'gestion/base.html' %}
+{% block title %}Vuelos Disponibles{% endblock %}
+{% block content %}
+
+<h1>Vuelos Disponibles</h1>
+
+{% if vuelos %}
+    {% for vuelo in vuelos %}
+        <div style="margin-bottom: 15px; padding: 10px; background: #fff; border: 1px solid #ccc;">
+            <p><strong>Origen:</strong> {{ vuelo.origen }}</p>
+            <p><strong>Destino:</strong> {{ vuelo.destino }}</p>
+            <p><strong>Fecha de salida:</strong> {{ vuelo.fecha_salida }}</p>
+            <p><strong>Precio:</strong> ${{ vuelo.precio_base }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No hay vuelos disponibles.</p>
+{% endif %}
+
+{% endblock %}

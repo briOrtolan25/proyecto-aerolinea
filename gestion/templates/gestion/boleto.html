@@ -1,0 +1,39 @@
+{% extends 'gestion/base.html' %}
+{% block title %}Boleto Generado{% endblock %}
+{% block content %}
+
+<h2>Boleto Electrónico</h2>
+
+<div class="info">
+    <p><strong>Pasajero:</strong> {{ reserva.pasajero.nombre }}</p>
+    <p><strong>Documento:</strong> {{ reserva.pasajero.documento }}</p>
+    <p><strong>Vuelo:</strong> {{ reserva.vuelo.origen }} → {{ reserva.vuelo.destino }}</p>
+    <p><strong>Fecha de salida:</strong> {{ reserva.vuelo.fecha_salida }}</p>
+    <p><strong>Asiento:</strong> {{ reserva.asiento.numero }}</p>
+    <p><strong>Precio pagado:</strong> ${{ reserva.precio }}</p>
+    <p><strong>Fecha de emisión:</strong> {{ boleto.fecha_emision }}</p>
+    <p><strong>Estado del boleto:</strong> {{ boleto.estado }}</p>
+    <p><strong>Código de reserva:</strong> {{ reserva.codigo_reserva }}</p>
+</div>
+
+<div class="boton" style="margin-top: 20px;">
+    <a href="{% url 'boleto_pdf' reserva.id %}" style="background-color: #007b8a; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+        📄 Descargar PDF
+    </a>
+</div>
+
+<!-- ✅ Botón para anular el boleto -->
+<div style="margin-top: 20px;">
+{% if boleto.estado != 'anulado' %}
+    <form action="{% url 'anular_boleto' boleto.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px;">
+            ❌ Anular Boleto
+        </button>
+    </form>
+{% else %}
+    <p style="color: red; font-weight: bold;">🚫 Este boleto ya fue anulado.</p>
+{% endif %}
+</div>
+
+{% endblock %}

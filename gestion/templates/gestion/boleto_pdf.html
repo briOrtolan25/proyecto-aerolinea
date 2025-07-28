@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            font-size: 14px;
+        }
+
+        .ticket {
+            border: 2px dashed #007b8a;
+            padding: 30px;
+            width: 600px;
+            margin: auto;
+            background-color: #fdfdfd;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #007b8a;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .line {
+            margin-bottom: 6px;
+        }
+
+        .reserva {
+            font-size: 16px;
+            text-align: center;
+            margin-top: 10px;
+            color: #d6336c;
+        }
+
+        .qr {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 30px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ticket">
+        <div class="logo">
+            <img src="data:image/jpeg;base64,{{ logo_base64 }}" style="max-width: 180px; height: auto; display: block; margin: 0 auto;" />
+
+        <h2>Boleto Electrónico de Vuelo</h2>
+
+        <div class="section">
+            <div class="line"><span class="label">Pasajero:</span> {{ reserva.pasajero.nombre }}</div>
+            <div class="line"><span class="label">Documento:</span> {{ reserva.pasajero.documento }}</div>
+            <div class="line"><span class="label">Vuelo:</span> {{ reserva.vuelo.origen }} → {{ reserva.vuelo.destino }}</div>
+            <div class="line"><span class="label">Fecha de salida:</span> {{ reserva.vuelo.fecha_salida|date:"d/m/Y H:i" }}</div>
+            <div class="line"><span class="label">Asiento:</span> {{ reserva.asiento.numero }}</div>
+            <div class="line"><span class="label">Precio pagado:</span> ${{ reserva.precio }}</div>
+            <div class="line"><span class="label">Estado del boleto:</span> {{ boleto.estado }}</div>
+        </div>
+
+        <div class="reserva">
+            Código de Reserva: <strong>{{ reserva.codigo_reserva }}</strong>
+        </div>
+
+        {% if qr_data %}
+        <div class="qr">
+            <img src="data:image/png;base64,{{ qr_data|safe }}" width="100">
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            ✈️ Gracias por elegir Aerolíneas Argentinas
+        </div>
+    </div>
+
+</body>
+</html>
+

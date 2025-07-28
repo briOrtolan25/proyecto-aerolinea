@@ -1,0 +1,13 @@
+{% extends 'gestion/base.html' %}
+{% block title %}Reservar Asiento{% endblock %}
+{% block content %}
+
+<h2>Formulario de Reserva</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Confirmar Reserva</button>
+</form>
+
+{% endblock %}
