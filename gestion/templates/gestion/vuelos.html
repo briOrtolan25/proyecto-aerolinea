@@ -17,5 +17,15 @@
 {% else %}
     <p>No hay vuelos disponibles.</p>
 {% endif %}
-
+{% if vuelo.origen and vuelo.destino %}
+<iframe
+  width="100%"
+  height="450"
+  style="border:0"
+  loading="lazy"
+  allowfullscreen
+  referrerpolicy="no-referrer-when-downgrade"
+  src="https://www.google.com/maps/embed/v1/directions?key=TU_CLAVE_API&origin={{ vuelo.origen }}&destination={{ vuelo.destino }}">
+</iframe>
+{% endif %}
 {% endblock %}
