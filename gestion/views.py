@@ -57,7 +57,7 @@ def generar_pdf_boleto(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id)
     boleto = reserva.boleto
 
-    logo_path = os.path.join(settings.BASE_DIR, "static", "logo.jpg")
+    logo_path = os.path.join(settings.BASE_DIR, "static", "Aurora.png")
     with open(logo_path, "rb") as image_file:
         logo_base64 = base64.b64encode(image_file.read()).decode()
 
