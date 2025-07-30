@@ -11,7 +11,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
+            background-color: #bee4f7ff;
             margin: 0;
         }
 
@@ -22,7 +22,6 @@
         }
 
         .carousel-caption {
-            background: rgba(0, 0, 0, 0.4); /* Fondo semitransparente para mejor lectura */
             border-radius: 10px;
             padding: 1rem 2rem;
         }
@@ -42,7 +41,7 @@
         }
         
 .footer-aurora {
-    background-color: #0d1b2a;
+    background-color: #55369eff;
     color: white;
     padding: 10px 20px;
     display: flex;
@@ -59,7 +58,16 @@
 .footer-aurora p {
     margin: 0;
 }
+.btn-custom {
+  background-color: #51e9d5ff; /* Color de fondo deseado */
+  color: white;              /* Color del texto */
+  border: none;
+  transition: background-color 0.3s ease;
+}
 
+.btn-custom:hover {
+  background-color: #ada6a6ff; /* Color de fondo al pasar el mouse */
+}
 
     </style>
 </head>
@@ -71,16 +79,16 @@
 
             <!-- Slide 1: Inicio -->
             <div class="carousel-item active">
-                <img src="{% static 'home.png' %}" class="d-block w-100" alt="home.png">
+                <img src="{% static '1.png' %}" class="d-block w-100" alt="1.png">
                 <div class="carousel-caption d-none d-md-block">
-                    <h5>Inicio</h5>
-                    <a href="{% url 'vuelos_disponibles' %}" class="btn btn-light">Ir a Inicio</a>
+                    <h5>Vuelos Disponibles</h5>
+                    <a href="{% url 'vuelos_disponibles' %}" class="btn btn-custom">Ir a Inicio</a>
                 </div>
             </div>
 
             <!-- Slide 2: Reservar -->
             <div class="carousel-item">
-                <img src="{% static 'reservas.png' %}" class="d-block w-100" alt="reservas.png">
+                <img src="{% static 'home.png' %}" class="d-block w-100" alt="home.png">
                 <div class="carousel-caption d-none d-md-block">
                     <h5>Reservar</h5>
                     <a href="{% url 'reservar_asiento' %}" class="btn btn-light">Ir a Reservas</a>
@@ -120,8 +128,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
    <footer class="footer-aurora">
     <p>📞 Emergencias: +54 9 11 0000-0000</p>
-    <p>🛠 Soporte: soporte@volanta.com</p>
-    <p>©  Aerolíneas - Desde 2023</p>
+    <p>🛠 Soporte: soporte@Aurora.com</p>
+    <p>©  Aurora Aerolíneas - Desde 2023</p>
 </footer>
  
 </body>
