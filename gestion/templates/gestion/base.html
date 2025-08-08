@@ -1,14 +1,21 @@
-{% load static %}
+{% load static %}  {# Carga la etiqueta 'static' para incluir archivos estáticos como imágenes, CSS, etc. #}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <title>{% block title %}Aurora Airlines - Vuela hacia tus sueños{% endblock %}</title>
     <!-- Bootstrap CSS (CDN) -->
+=======
+    <title>{% block title %}Aerolínea{% endblock %}</title>  {# Bloque de título dinámico para herencia de plantillas #}
+
+    <!-- Bootstrap CSS (CDN) para estilos y componentes predefinidos -->
+>>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+<<<<<<< HEAD
         :root {
             --aurora-primary: #2563eb;
             --aurora-secondary: #9333ea;
@@ -65,6 +72,16 @@
         }
 
         /* Carrusel mejorado */
+=======
+        /* Estilo general del cuerpo */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #bee4f7ff;  /* Color de fondo celeste claro */
+            margin: 0;
+        }
+
+        /* Estilo para las imágenes del carrusel */
+>>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
         .carousel-item img {
             height: 400px;
             object-fit: cover;
@@ -72,6 +89,7 @@
             filter: brightness(0.8);
         }
 
+        /* Estilos para los textos del carrusel */
         .carousel-caption {
             background: rgba(0, 0, 0, 0.6);
             border-radius: 15px;
@@ -92,6 +110,7 @@
             opacity: 0.9;
         }
 
+<<<<<<< HEAD
         .carousel-caption .btn {
             margin: 0.5rem;
             font-size: 1.1rem;
@@ -262,9 +281,13 @@
         }
 
         /* Contenedor principal */
+=======
+        /* Padding general del contenido */
+>>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
         .container {
             padding: 30px 15px;
         }
+<<<<<<< HEAD
 
         /* Mejoras para el contenido */
         .content-section {
@@ -312,9 +335,80 @@
                     </ul>
                 </div>
             </nav>
+=======
+        
+        /* Estilo del pie de página */
+        .footer-aurora {
+            background-color: #55369eff;  /* Azul oscuro/morado */
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 14px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.3);  /* Sombra superior */
+        }
+
+        .footer-aurora p {
+            margin: 0;
+        }
+
+        /* Estilo personalizado para botones */
+        .btn-custom {
+            background-color: #51e9d5ff;  /* Verde agua */
+            color: white;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background-color: #ada6a6ff;  /* Gris claro al pasar el mouse */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Carrusel principal de navegación -->
+    <div id="navCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" data-bs-pause="hover">
+        <div class="carousel-inner">
+
+            <!-- Slide 1: Ir a vuelos disponibles -->
+            <div class="carousel-item active">
+                <img src="{% static '1.png' %}" class="d-block w-100" alt="1.png">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Vuelos Disponibles</h5>
+                    <a href="{% url 'vuelos_disponibles' %}" class="btn btn-custom">Ir a Inicio</a>
+                </div>
+            </div>
+
+            <!-- Slide 2: Ir a reservas -->
+            <div class="carousel-item">
+                <img src="{% static 'home.png' %}" class="d-block w-100" alt="home.png">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Reservar</h5>
+                    <a href="{% url 'reservar_asiento' %}" class="btn btn-light">Ir a Reservas</a>
+                </div>
+            </div>
+
+            <!-- Slide 3: Ir a reportes -->
+            <div class="carousel-item">
+                <img src="{% static 'reportes.png' %}" class="d-block w-100" alt="reportes.png">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Reportes</h5>
+                    <a href="{% url 'reporte_pasajeros' %}" class="btn btn-light">Ver Reportes</a>
+                </div>
+            </div>
+
+>>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
         </div>
     </header>
 
+<<<<<<< HEAD
     <!-- Carrusel Hero mejorado -->
     <div id="navCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000" data-bs-pause="hover">
         <div class="carousel-indicators">
@@ -367,16 +461,22 @@
             </div>
         </div>
         
+=======
+        <!-- Botón anterior del carrusel -->
+>>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
         <button class="carousel-control-prev" type="button" data-bs-target="#navCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon"></span>
             <span class="visually-hidden">Anterior</span>
         </button>
+
+        <!-- Botón siguiente del carrusel -->
         <button class="carousel-control-next" type="button" data-bs-target="#navCarousel" data-bs-slide="next">
             <span class="carousel-control-next-icon"></span>
             <span class="visually-hidden">Siguiente</span>
         </button>
     </div>
 
+<<<<<<< HEAD
     <!-- Sección de servicios destacados -->
     <section id="servicios" class="aurora-section">
         <div class="container">
@@ -507,5 +607,24 @@
     {% block extra_js %}
     <!-- JavaScript adicional específico de cada página -->
     {% endblock %}
+=======
+    <!-- Contenedor de contenido dinámico -->
+    <div class="container">
+        {% block content %}
+        {# Aquí se insertará el contenido específico de cada página hija #}
+        {% endblock %}
+    </div>
+
+    <!-- Bootstrap JS para funcionalidad del carrusel y componentes dinámicos -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Pie de página con información de contacto -->
+    <footer class="footer-aurora">
+        <p>📞 Emergencias: +54 9 11 0000-0000</p>
+        <p>🛠 Soporte: soporte@Aurora.com</p>
+        <p>© Aurora Aerolíneas - Desde 2023</p>
+    </footer>
+
+>>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
 </body>
 </html>
