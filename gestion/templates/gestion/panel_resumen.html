@@ -1,0 +1,1197 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Panel de Control - Aurora Airlines{% endblock %}
+
+{% block content %}
+<div class="panel-container">
+    <!-- Header de bienvenida -->
+    <div class="welcome-header mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="welcome-content">
+                    <div class="welcome-badge mb-3">
+                        <i class="bi bi-star-fill"></i>
+                        Panel de Control
+                    </div>
+                    <h1 class="welcome-title">
+                        ¡Bienvenido, <span class="gradient-text">{{ user.username|title }}</span>!
+                    </h1>
+                    <p class="welcome-subtitle">
+                        Gestiona tu sistema Aurora Airlines desde este panel centralizado. 
+                        Aquí encontrarás todas las herramientas necesarias para administrar vuelos, 
+                        reservas y generar reportes detallados.
+                    </p>
+                    <div class="welcome-stats">
+                        <div class="stat-item">
+                            <i class="bi bi-clock"></i>
+                            <span>Último acceso: {{ user.last_login|date:"d/m/Y H:i"|default:"Primer acceso" }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="bi bi-calendar"></i>
+                            <span>Hoy: {{ "now"|date:"l, d \d\e F \d\e Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="welcome-visual">
+                    <div class="user-avatar">
+                        <div class="avatar-circle">
+                            {{ user.username|first|upper }}
+                        </div>
+                        <div class="avatar-status online"></div>
+                    </div>
+                    <div class="welcome-decoration">
+                        <div class="floating-icon" style="animation-delay: 0s;">✈️</div>
+                        <div class="floating-icon" style="animation-delay: 1s;">🌟</div>
+                        <div class="floating-icon" style="animation-delay: 2s;">📊</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas rápidas -->
+    <div class="quick-metrics mb-5">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="metric-card flights">
+                    <div class="metric-icon">
+                        <i class="bi bi-airplane"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 class="metric-number" data-target="24">0</h3>
+                        <p class="metric-label">Vuelos Activos</p>
+                        <div class="metric-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>+12% vs ayer</span>
+                        </div>
+                    </div>
+                    <div class="metric-progress">
+                        <div class="progress-bar" style="width: 75%;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="metric-card reservations">
+                    <div class="metric-icon">
+                        <i class="bi bi-ticket-perforated"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 class="metric-number" data-target="156">0</h3>
+                        <p class="metric-label">Reservas Hoy</p>
+                        <div class="metric-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>+8% vs ayer</span>
+                        </div>
+                    </div>
+                    <div class="metric-progress">
+                        <div class="progress-bar" style="width: 85%;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="metric-card passengers">
+                    <div class="metric-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 class="metric-number" data-target="1247">0</h3>
+                        <p class="metric-label">Pasajeros</p>
+                        <div class="metric-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>+15% vs ayer</span>
+                        </div>
+                    </div>
+                    <div class="metric-progress">
+                        <div class="progress-bar" style="width: 92%;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="metric-card revenue">
+                    <div class="metric-icon">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3 class="metric-number" data-target="89500">$0</h3>
+                        <p class="metric-label">Ingresos Hoy</p>
+                        <div class="metric-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>+22% vs ayer</span>
+                        </div>
+                    </div>
+                    <div class="metric-progress">
+                        <div class="progress-bar" style="width: 88%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones principales -->
+    <div class="main-actions mb-5">
+        <div class="aurora-card">
+            <div class="card-header-custom">
+                <h3 class="mb-0">
+                    <i class="bi bi-lightning-charge"></i>
+                    Acciones Principales
+                </h3>
+                <p class="mb-0 opacity-75">Accede rápidamente a las funciones más utilizadas</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <a href="{% url 'vuelos_disponibles' %}" class="action-card-main">
+                            <div class="action-header">
+                                <div class="action-icon flights">
+                                    <i class="bi bi-airplane"></i>
+                                </div>
+                                <div class="action-badge">
+                                    <span class="badge-number">24</span>
+                                    <span class="badge-label">Activos</span>
+                                </div>
+                            </div>
+                            <div class="action-content">
+                                <h4>Gestionar Vuelos</h4>
+                                <p>Administra vuelos programados, horarios y rutas disponibles</p>
+                                <div class="action-features">
+                                    <span class="feature-tag">
+                                        <i class="bi bi-check-circle"></i>
+                                        Programación
+                                    </span>
+                                    <span class="feature-tag">
+                                        <i class="bi bi-check-circle"></i>
+                                        Rutas
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="action-footer">
+                                <span class="action-link">
+                                    Ver Vuelos
+                                    <i class="bi bi-arrow-right"></i>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <a href="{% url 'reservar_asiento' %}" class="action-card-main">
+                            <div class="action-header">
+                                <div class="action-icon reservations">
+                                    <i class="bi bi-calendar-plus"></i>
+                                </div>
+                                <div class="action-badge">
+                                    <span class="badge-number">156</span>
+                                    <span class="badge-label">Hoy</span>
+                                </div>
+                            </div>
+                            <div class="action-content">
+                                <h4>Nueva Reserva</h4>
+                                <p>Crea reservas para pasajeros y gestiona asientos disponibles</p>
+                                <div class="action-features">
+                                    <span class="feature-tag">
+                                        <i class="bi bi-check-circle"></i>
+                                        Asientos
+                                    </span>
+                                    <span class="feature-tag">
+                                        <i class="bi bi-check-circle"></i>
+                                        Pagos
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="action-footer">
+                                <span class="action-link">
+                                    Crear Reserva
+                                    <i class="bi bi-arrow-right"></i>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <a href="{% url 'reporte_pasajeros' %}" class="action-card-main">
+                            <div class="action-header">
+                                <div class="action-icon reports">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                </div>
+                                <div class="action-badge">
+                                    <span class="badge-number">12</span>
+                                    <span class="badge-label">Reportes</span>
+                                </div>
+                            </div>
+                            <div class="action-content">
+                                <h4>Reportes y Análisis</h4>
+                                <p>Genera reportes detallados y analiza el rendimiento del sistema</p>
+                                <div class="action-features">
+                                    <span class="feature-tag">
+                                        <i class="bi bi-check-circle"></i>
+                                        PDF/CSV
+                                    </span>
+                                    <span class="feature-tag">
+                                        <i class="bi bi-check-circle"></i>
+                                        Estadísticas
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="action-footer">
+                                <span class="action-link">
+                                    Ver Reportes
+                                    <i class="bi bi-arrow-right"></i>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard en tiempo real -->
+    <div class="row g-4 mb-5">
+        <!-- Actividad reciente -->
+        <div class="col-lg-8">
+            <div class="aurora-card h-100">
+                <div class="card-header-custom">
+                    <h4 class="mb-0">
+                        <i class="bi bi-activity"></i>
+                        Actividad Reciente
+                    </h4>
+                    <p class="mb-0 opacity-75">Últimas acciones en el sistema</p>
+                </div>
+                
+                <div class="card-body p-0">
+                    <div class="activity-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker flights">
+                                <i class="bi bi-airplane"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <h5>Nuevo vuelo programado</h5>
+                                    <span class="timeline-time">Hace 15 min</span>
+                                </div>
+                                <p>Vuelo AU-1024 Buenos Aires → Madrid programado para mañana 14:30</p>
+                                <div class="timeline-tags">
+                                    <span class="tag success">Confirmado</span>
+                                    <span class="tag info">Internacional</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker reservations">
+                                <i class="bi bi-ticket-perforated"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <h5>Reserva confirmada</h5>
+                                    <span class="timeline-time">Hace 32 min</span>
+                                </div>
+                                <p>María González - Asiento 12A - Vuelo AU-0856 confirmado</p>
+                                <div class="timeline-tags">
+                                    <span class="tag success">Pagado</span>
+                                    <span class="tag warning">Check-in pendiente</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker reports">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <h5>Reporte generado</h5>
+                                    <span class="timeline-time">Hace 1 hora</span>
+                                </div>
+                                <p>Reporte de pasajeros del vuelo AU-0745 exportado a PDF</p>
+                                <div class="timeline-tags">
+                                    <span class="tag info">PDF</span>
+                                    <span class="tag secondary">45 pasajeros</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker system">
+                                <i class="bi bi-gear"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <h5>Actualización del sistema</h5>
+                                    <span class="timeline-time">Hace 2 horas</span>
+                                </div>
+                                <p>Sistema actualizado a la versión 2.1.4 - Mejoras en rendimiento</p>
+                                <div class="timeline-tags">
+                                    <span class="tag success">Completado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-footer p-4 border-top">
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            Ver Toda la Actividad
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Panel de estado -->
+        <div class="col-lg-4">
+            <div class="aurora-card h-100">
+                <div class="card-header-custom">
+                    <h4 class="mb-0">
+                        <i class="bi bi-speedometer2"></i>
+                        Estado del Sistema
+                    </h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="system-status">
+                        <div class="status-item">
+                            <div class="status-indicator online"></div>
+                            <div class="status-info">
+                                <h5>Servicios Online</h5>
+                                <p>Todos los sistemas funcionando correctamente</p>
+                            </div>
+                            <div class="status-value">100%</div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="status-indicator warning"></div>
+                            <div class="status-info">
+                                <h5>Ocupación Promedio</h5>
+                                <p>Nivel de ocupación en vuelos activos</p>
+                            </div>
+                            <div class="status-value">78%</div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="status-indicator success"></div>
+                            <div class="status-info">
+                                <h5>Satisfacción Cliente</h5>
+                                <p>Calificación promedio de pasajeros</p>
+                            </div>
+                            <div class="status-value">4.8★</div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="status-indicator info"></div>
+                            <div class="status-info">
+                                <h5>Puntualidad</h5>
+                                <p>Vuelos que salen a tiempo</p>
+                            </div>
+                            <div class="status-value">96%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="system-actions mt-4">
+                        <button class="btn btn-outline-success btn-sm w-100 mb-2">
+                            <i class="bi bi-shield-check"></i>
+                            Ejecutar Diagnóstico
+                        </button>
+                        <button class="btn btn-outline-info btn-sm w-100">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            Actualizar Estado
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accesos rápidos adicionales -->
+    <div class="quick-access">
+        <div class="aurora-card">
+            <div class="card-header-custom">
+                <h4 class="mb-0">
+                    <i class="bi bi-bookmark-star"></i>
+                    Accesos Rápidos
+                </h4>
+                <p class="mb-0 opacity-75">Herramientas y funciones adicionales</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-lg-2 col-md-4 col-6">
+                        <a href="#" class="quick-link">
+                            <div class="quick-icon">
+                                <i class="bi bi-calendar-week"></i>
+                            </div>
+                            <span>Horarios</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-6">
+                        <a href="#" class="quick-link">
+                            <div class="quick-icon">
+                                <i class="bi bi-geo-alt"></i>
+                            </div>
+                            <span>Destinos</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-6">
+                        <a href="#" class="quick-link">
+                            <div class="quick-icon">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <span>Tripulación</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-6">
+                        <a href="#" class="quick-link">
+                            <div class="quick-icon">
+                                <i class="bi bi-tools"></i>
+                            </div>
+                            <span>Mantenimiento</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-6">
+                        <a href="#" class="quick-link">
+                            <div class="quick-icon">
+                                <i class="bi bi-chat-dots"></i>
+                            </div>
+                            <span>Soporte</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-6">
+                        <a href="#" class="quick-link">
+                            <div class="quick-icon">
+                                <i class="bi bi-gear"></i>
+                            </div>
+                            <span>Configuración</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .panel-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Header de bienvenida */
+    .welcome-header {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(147, 51, 234, 0.05));
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(37,99,235,0.1)"/></svg>') repeat;
+        animation: float 20s linear infinite;
+    }
+
+    .welcome-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .welcome-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.125rem;
+        color: #6b7280;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .welcome-stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+
+    .stat-item i {
+        color: var(--aurora-primary);
+    }
+
+    /* Avatar de usuario */
+    .welcome-visual {
+        text-align: center;
+        position: relative;
+    }
+
+    .user-avatar {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 2rem;
+    }
+
+    .avatar-circle {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+        font-weight: bold;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+    }
+
+    .avatar-status {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 4px solid white;
+    }
+
+    .avatar-status.online {
+        background: #10b981;
+    }
+
+    .welcome-decoration {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+    }
+
+    .floating-icon {
+        position: absolute;
+        font-size: 1.5rem;
+        animation: floatAround 6s ease-in-out infinite;
+        opacity: 0.6;
+    }
+
+    .floating-icon:nth-child(1) {
+        top: 20%;
+        left: 10%;
+    }
+
+    .floating-icon:nth-child(2) {
+        top: 60%;
+        right: 15%;
+    }
+
+    .floating-icon:nth-child(3) {
+        bottom: 20%;
+        left: 20%;
+    }
+
+    @keyframes floatAround {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        33% { transform: translateY(-10px) rotate(5deg); }
+        66% { transform: translateY(5px) rotate(-3deg); }
+    }
+
+    /* Métricas rápidas */
+    .metric-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(37, 99, 235, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+    }
+
+    .metric-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .metric-card.flights::before {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .metric-card.reservations::before {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .metric-card.passengers::before {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .metric-card.revenue::before {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .metric-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .metric-card.flights .metric-icon {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .metric-card.reservations .metric-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .metric-card.passengers .metric-icon {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .metric-card.revenue .metric-icon {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .metric-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--aurora-primary);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+
+    .metric-label {
+        font-size: 1rem;
+        color: #6b7280;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .metric-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .metric-trend.positive {
+        color: #059669;
+    }
+
+    .metric-progress {
+        height: 4px;
+        background: rgba(37, 99, 235, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        border-radius: 2px;
+        transition: width 2s ease;
+    }
+
+    /* Header de cards */
+    .card-header-custom {
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        color: white;
+        padding: 1.5rem;
+        border-radius: 20px 20px 0 0;
+    }
+
+    /* Acciones principales */
+    .action-card-main {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(37, 99, 235, 0.1);
+        height: 100%;
+    }
+
+    .action-card-main:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+        color: inherit;
+        border-color: rgba(37, 99, 235, 0.3);
+    }
+
+    .action-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .action-icon.flights {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .action-icon.reservations {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .action-icon.reports {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .action-badge {
+        text-align: right;
+    }
+
+    .badge-number {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--aurora-primary);
+    }
+
+    .badge-label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .action-content h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #1f2937;
+        margin-bottom: 0.75rem;
+    }
+
+    .action-content p {
+        color: #6b7280;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .action-features {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-tag {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--aurora-primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .action-footer {
+        border-top: 1px solid rgba(37, 99, 235, 0.1);
+        padding-top: 1rem;
+    }
+
+    .action-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 600;
+        color: var(--aurora-primary);
+    }
+
+    /* Timeline de actividad */
+    .activity-timeline {
+        padding: 2rem;
+    }
+
+    .timeline-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .timeline-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 50px;
+        bottom: -20px;
+        width: 2px;
+        background: #e5e7eb;
+    }
+
+    .timeline-marker {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .timeline-marker.flights {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .timeline-marker.reservations {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .timeline-marker.reports {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .timeline-marker.system {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+    }
+
+    .timeline-content {
+        flex: 1;
+    }
+
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-header h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .timeline-time {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
+    .timeline-content p {
+        color: #6b7280;
+        margin-bottom: 0.75rem;
+        line-height: 1.5;
+    }
+
+    .timeline-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .tag {
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .tag.success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+    .tag.info {
+        background: rgba(59, 130, 246, 0.1);
+        color: #1d4ed8;
+    }
+
+    .tag.warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+    }
+
+    .tag.secondary {
+        background: rgba(107, 114, 128, 0.1);
+        color: #4b5563;
+    }
+
+    /* Estado del sistema */
+    .system-status {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .status-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .status-indicator.online {
+        background: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-indicator.warning {
+        background: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+
+    .status-indicator.success {
+        background: #059669;
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+    }
+
+    .status-indicator.info {
+        background: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .status-info {
+        flex: 1;
+    }
+
+    .status-info h5 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+    }
+
+    .status-info p {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .status-value {
+        font-weight: bold;
+        color: var(--aurora-primary);
+    }
+
+    /* Accesos rápidos */
+    .quick-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.5rem 1rem;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(37, 99, 235, 0.1);
+    }
+
+    .quick-link:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: inherit;
+        border-color: rgba(37, 99, 235, 0.3);
+    }
+
+    .quick-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+    }
+
+    .quick-link span {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .welcome-title {
+            font-size: 2rem;
+        }
+
+        .welcome-stats {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+
+        .metric-card {
+            padding: 1.5rem;
+        }
+
+        .metric-number {
+            font-size: 2rem;
+        }
+
+        .action-card-main {
+            padding: 1.5rem;
+        }
+
+        .timeline-item {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .timeline-item::after {
+            display: none;
+        }
+
+        .timeline-header {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+    }
+
+    /* Animaciones */
+    @keyframes countUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .metric-number {
+        animation: countUp 0.8s ease-out;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animación de números
+        const numbers = document.querySelectorAll('.metric-number');
+        
+        numbers.forEach(number => {
+            const target = parseInt(number.dataset.target);
+            let current = 0;
+            const increment = target / 50;
+            const isRevenue = number.textContent.includes('$');
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (isRevenue) {
+                    number.textContent = '$' + Math.floor(current).toLocaleString();
+                } else {
+                    number.textContent = Math.floor(current);
+                }
+            }, 30);
+        });
+
+        // Animación de barras de progreso
+        setTimeout(() => {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        }, 500);
+
+        // Actualizar hora actual
+        function updateTime() {
+            const now = new Date();
+            const timeElements = document.querySelectorAll('.current-time');
+            timeElements.forEach(element => {
+                element.textContent = now.toLocaleTimeString('es-ES');
+            });
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Animación de entrada para las cards
+        const cards = document.querySelectorAll('.metric-card, .action-card-main, .aurora-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

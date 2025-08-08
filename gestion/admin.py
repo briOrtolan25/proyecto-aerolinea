@@ -28,9 +28,9 @@ class ReservaAdminForm(ModelForm):
 @admin.register(Reserva)
 class ReservaAdmin(admin.ModelAdmin):
     form = ReservaAdminForm
-    list_display = ('codigo_reserva', 'pasajero', 'vuelo', 'asiento', 'precio', 'estado')
-    list_filter = ('estado',)
-    search_fields = ('codigo_reserva', 'pasajero__nombre')
+    list_display = ('vuelo', 'pasajero', 'asiento', 'precio_final')  # confirmá que "precio_final" es el campo correcto
+    search_fields = ('pasajero__nombre', 'vuelo__origen', 'vuelo__destino')
+    list_filter = ('vuelo__estado',)
 
 # ✅ Admin para Boleto con acción para anular
 @admin.register(Boleto)
@@ -51,18 +51,21 @@ class BoletoAdmin(admin.ModelAdmin):
 @admin.register(Avion)
 class AvionAdmin(admin.ModelAdmin):
     list_display = ('modelo', 'capacidad', 'filas', 'columnas')
+    search_fields = ('modelo',)
 
 @admin.register(Vuelo)
 class VueloAdmin(admin.ModelAdmin):
     list_display = ('origen', 'destino', 'fecha_salida', 'estado', 'precio_base')
     list_filter = ('estado',)
+    search_fields = ('origen', 'destino')
 
 @admin.register(Pasajero)
 class PasajeroAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'documento', 'email')
+    list_display = ('nombre', 'documento')  # Quitar 'email' porque no existe en el modelo
     search_fields = ('nombre', 'documento')
 
 @admin.register(Asiento)
 class AsientoAdmin(admin.ModelAdmin):
     list_display = ('numero', 'avion', 'fila', 'columna', 'tipo', 'estado')
     list_filter = ('estado', 'tipo')
+    search_fields = ('numero',)

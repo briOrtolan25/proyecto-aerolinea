@@ -14,6 +14,35 @@ from django.db.models import Sum, Count, Q
 from django.conf import settings
 from .models import Vuelo, Asiento, Reserva, Boleto, Pasajero
 from .forms import ReservaForm
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from .forms import RegistroForm, LoginForm
+
+def registro_view(request):
+    if request.method == 'POST':
+        form = RegistroForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')  # Reemplazar con la vista principal
+    else:
+        form = RegistroForm()
+    return render(request, 'accounts/registro.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')  # Redirige a la vista principal
+    else:
+        form = LoginForm()
+    return render(request, 'accounts/login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')  # Redirige a login tras cerrar sesión
 
 # Vista: Lista de vuelos
 def vuelos_disponibles(request):
@@ -21,32 +50,46 @@ def vuelos_disponibles(request):
     return render(request, 'gestion/vuelos.html', {'vuelos': vuelos})
 
 # Vista: Formulario de reserva (con validaciones + mensajes)
+def crear_reserva(request):
+    if request.method == 'POST':
+        form = ReservaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_reservas')  # o donde quieras redirigir
+    else:
+        form = ReservaForm()
+    return render(request, 'crear_reserva.html', {'form': form})
+    if request.method == 'POST':
+        form = ReservaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('reserva_exitosa')
+    else:
+        vuelo_id = request.GET.get('vuelo')  # por ejemplo: ?vuelo=3
+        pasajero_id = request.GET.get('pasajero')
+        asiento_id = request.GET.get('asiento')
+
+        initial_data = {}
+        if vuelo_id:
+            initial_data['vuelo'] = vuelo_id
+        if pasajero_id:
+            initial_data['pasajero'] = pasajero_id
+        if asiento_id:
+            initial_data['asiento'] = asiento_id
+
+        form = ReservaForm(initial=initial_data)
+
+    return render(request, 'gestion/reserva.html', {'form': form})
 def reservar_asiento(request):
     if request.method == 'POST':
         form = ReservaForm(request.POST)
         if form.is_valid():
-            asiento = form.cleaned_data['asiento']
-            if asiento.estado == 'disponible':
-                asiento.estado = 'reservado'
-                asiento.save()
-                reserva = form.save()
-
-                Boleto.objects.create(
-                    reserva=reserva,
-                    codigo_barra=reserva.codigo_reserva,
-                    estado='activo'
-                )
-
-                return redirect('ver_boleto', reserva_id=reserva.id)
-        else:
-            messages.warning(request, '⚠️ Por favor corregí los errores del formulario.')
+            form.save()
+            return redirect('home')  # cambiá a donde quieras redirigir
     else:
         form = ReservaForm()
 
-    form.fields['asiento'].queryset = Asiento.objects.filter(estado='disponible')
-    return render(request, 'gestion/reserva.html', {'form': form})
-
-# Vista: Ver boleto en pantalla
+    return render(request, 'gestion/reservar_asiento.html', {'form': form})# Vista: Ver boleto en pantalla
 def ver_boleto(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id)
     boleto = reserva.boleto
@@ -149,8 +192,10 @@ def panel_resumen(request):
     total_pasajeros = Pasajero.objects.count()
     total_asientos = Asiento.objects.count()
     asientos_ocupados = Asiento.objects.exclude(estado='disponible').count()
+    ingresos = Reserva.objects.aggregate(total=Sum('precio_final'))['total'] or 0
+
     asientos_disponibles = Asiento.objects.filter(estado='disponible').count()
-    ingresos = Reserva.objects.aggregate(total=Sum('precio'))['total'] or 0
+   
     print("💸 INGRESOS TOTALES:", ingresos)
 
     return render(request, 'gestion/resumen.html', {

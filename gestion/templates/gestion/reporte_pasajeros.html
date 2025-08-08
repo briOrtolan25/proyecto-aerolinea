@@ -1,54 +1,917 @@
 {% extends 'gestion/base.html' %}
-{% block title %}Reporte de Pasajeros{% endblock %}
+
+{% block title %}Reporte de Pasajeros - Aurora Airlines{% endblock %}
+
 {% block content %}
+<div class="reporte-container">
+    <!-- Header de la página -->
+    <div class="page-header text-center mb-5">
+        <div class="d-inline-block p-3 rounded-circle bg-gradient mb-3" style="background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));">
+            <i class="bi bi-file-earmark-text text-white" style="font-size: 2rem;"></i>
+        </div>
+        <h1 class="display-4 gradient-text mb-3">Reporte de Pasajeros</h1>
+        <p class="lead text-muted">Consulta detallada de pasajeros por vuelo con opciones de exportación</p>
+        <div class="divider mx-auto"></div>
+    </div>
 
-<h1>Pasajeros por Vuelo</h1>
+    <!-- Selector de vuelo -->
+    <div class="flight-selector mb-5">
+        <div class="aurora-card">
+            <div class="card-header-custom">
+                <h3 class="mb-0">
+                    <i class="bi bi-search"></i>
+                    Seleccionar Vuelo
+                </h3>
+                <p class="mb-0 opacity-75">Elige el vuelo para generar el reporte de pasajeros</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="get" id="vueloForm" class="flight-form">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-lg-8">
+                            <label for="vuelo_id" class="form-label">
+                                <i class="bi bi-airplane text-primary"></i>
+                                Vuelo Disponible
+                                <span class="required">*</span>
+                            </label>
+                            <select name="vuelo_id" id="vuelo_id" class="form-select form-select-lg" required>
+                                <option value="">-- Selecciona un vuelo --</option>
+                                {% for vuelo in vuelos %}
+                                    <option value="{{ vuelo.id }}" 
+                                            data-origen="{{ vuelo.origen }}" 
+                                            data-destino="{{ vuelo.destino }}"
+                                            data-fecha="{{ vuelo.fecha_salida|date:'d/m/Y H:i' }}"
+                                            {% if vuelo_seleccionado == vuelo.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ vuelo.origen }} → {{ vuelo.destino }} | {{ vuelo.fecha_salida|date:"d/m/Y H:i" }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-lg-4">
+                            <button type="submit" class="btn btn-aurora-primary btn-lg w-100" id="consultarBtn">
+                                <i class="bi bi-search"></i>
+                                <span class="btn-text">Consultar Pasajeros</span>
+                                <span class="btn-loading" style="display: none;">
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    Cargando...
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
 
-<form method="get">
-    <label for="vuelo_id">Seleccionar vuelo:</label>
-    <select name="vuelo_id" id="vuelo_id" required>
-        <option value="">-- Elegir vuelo --</option>
-        {% for vuelo in vuelos %}
-            <option value="{{ vuelo.id }}" {% if vuelo_seleccionado == vuelo.id|stringformat:"s" %}selected{% endif %}>
-                {{ vuelo.origen }} → {{ vuelo.destino }} ({{ vuelo.fecha_salida|date:"d/m/Y H:i" }})
-            </option>
-        {% endfor %}
-    </select>
-    <button type="submit">Ver Pasajeros</button>
-</form>
+                <!-- Vista previa del vuelo seleccionado -->
+                <div id="flightPreview" class="flight-preview mt-4" style="display: none;">
+                    <div class="preview-card">
+                        <div class="flight-route-preview">
+                            <div class="city-preview">
+                                <div class="city-code" id="origenCode"></div>
+                                <div class="city-name" id="origenName"></div>
+                            </div>
+                            <div class="flight-arrow-preview">
+                                <div class="arrow-line"></div>
+                                <div class="airplane-icon">
+                                    <i class="bi bi-airplane"></i>
+                                </div>
+                            </div>
+                            <div class="city-preview">
+                                <div class="city-code" id="destinoCode"></div>
+                                <div class="city-name" id="destinoName"></div>
+                            </div>
+                        </div>
+                        <div class="flight-info-preview">
+                            <span class="flight-date" id="fechaVuelo"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-{% if vuelo_seleccionado and reservas %}
-<div class="acciones" style="margin-top: 10px;">
-    <a href="{% url 'exportar_reporte_pdf' vuelo_seleccionado %}" target="_blank">📄 Descargar PDF</a>
-    <a href="{% url 'exportar_reporte_csv' vuelo_seleccionado %}" target="_blank">📊 Descargar CSV</a>
+    {% if vuelo_seleccionado and reservas %}
+        <!-- Estadísticas del vuelo -->
+        <div class="flight-stats mb-5">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="stat-card-report">
+                        <div class="stat-icon passengers">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">{{ reservas|length }}</h3>
+                            <p class="stat-label">Pasajeros Confirmados</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card-report">
+                        <div class="stat-icon revenue">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">
+                                ${% for reserva in reservas %}{{ reserva.precio|add:0 }}{% if not forloop.last %}{% endif %}{% endfor %}
+                            </h3>
+                            <p class="stat-label">Ingresos Totales</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card-report">
+                        <div class="stat-icon occupancy">
+                            <i class="bi bi-pie-chart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">{% widthratio reservas|length 150 100 %}%</h3>
+                            <p class="stat-label">Ocupación</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card-report">
+                        <div class="stat-icon seats">
+                            <i class="bi bi-grid-3x3"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">{{ reservas|length }}/150</h3>
+                            <p class="stat-label">Asientos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones de exportación -->
+        <div class="export-actions mb-4">
+            <div class="aurora-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="export-info">
+                            <h5 class="mb-1">
+                                <i class="bi bi-download text-primary"></i>
+                                Opciones de Exportación
+                            </h5>
+                            <p class="text-muted mb-0">Descarga el reporte en diferentes formatos</p>
+                        </div>
+                        <div class="export-buttons">
+                            <a href="{% url 'exportar_reporte_pdf' vuelo_seleccionado %}" 
+                               target="_blank" 
+                               class="btn btn-outline-danger me-2">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                                Descargar PDF
+                            </a>
+                            <a href="{% url 'exportar_reporte_csv' vuelo_seleccionado %}" 
+                               target="_blank" 
+                               class="btn btn-outline-success">
+                                <i class="bi bi-file-earmark-spreadsheet"></i>
+                                Descargar CSV
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if reservas %}
+        <!-- Tabla de pasajeros -->
+        <div class="passengers-table-section">
+            <div class="aurora-card">
+                <div class="card-header-custom">
+                    <h3 class="mb-0">
+                        <i class="bi bi-list-ul"></i>
+                        Lista de Pasajeros
+                    </h3>
+                    <p class="mb-0 opacity-75">{{ reservas|length }} pasajero{{ reservas|length|pluralize }} confirmado{{ reservas|length|pluralize }}</p>
+                </div>
+                
+                <div class="card-body p-0">
+                    <!-- Filtros de búsqueda -->
+                    <div class="table-filters p-4 border-bottom">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" placeholder="Buscar pasajero..." id="searchPassenger">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-grid-3x3"></i>
+                                    </span>
+                                    <input type="text" class="form-control" placeholder="Filtrar por asiento..." id="searchSeat">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                    Limpiar Filtros
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla responsive -->
+                    <div class="table-responsive">
+                        <table class="table table-hover passengers-table mb-0" id="passengersTable">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="passenger">
+                                        <i class="bi bi-person"></i>
+                                        Pasajero
+                                        <i class="bi bi-chevron-expand sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-sort="document">
+                                        <i class="bi bi-card-text"></i>
+                                        Documento
+                                        <i class="bi bi-chevron-expand sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-sort="seat">
+                                        <i class="bi bi-grid-3x3"></i>
+                                        Asiento
+                                        <i class="bi bi-chevron-expand sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-sort="price">
+                                        <i class="bi bi-currency-dollar"></i>
+                                        Precio
+                                        <i class="bi bi-chevron-expand sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-sort="code">
+                                        <i class="bi bi-ticket-perforated"></i>
+                                        Código Reserva
+                                        <i class="bi bi-chevron-expand sort-icon"></i>
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-check-circle"></i>
+                                        Estado
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reserva in reservas %}
+                                <tr class="passenger-row" data-passenger="{{ reserva.pasajero.nombre|lower }}" data-seat="{{ reserva.asiento.numero }}">
+                                    <td class="passenger-cell">
+                                        <div class="passenger-info">
+                                            <div class="passenger-avatar">
+                                                {{ reserva.pasajero.nombre|first|upper }}
+                                            </div>
+                                            <div class="passenger-details">
+                                                <div class="passenger-name">{{ reserva.pasajero.nombre }} {{ reserva.pasajero.apellido|default:"" }}</div>
+                                                <div class="passenger-email">{{ reserva.pasajero.email|default:"No especificado" }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="document-cell">
+                                        <span class="document-number">{{ reserva.pasajero.documento|default:"N/A" }}</span>
+                                    </td>
+                                    <td class="seat-cell">
+                                        <span class="seat-badge">{{ reserva.asiento.numero }}</span>
+                                    </td>
+                                    <td class="price-cell">
+                                        <span class="price-amount">${{ reserva.precio }}</span>
+                                    </td>
+                                    <td class="code-cell">
+                                        <span class="reservation-code">{{ reserva.codigo_reserva }}</span>
+                                    </td>
+                                    <td class="status-cell">
+                                        <span class="status-badge confirmed">
+                                            <i class="bi bi-check-circle"></i>
+                                            Confirmado
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación y resumen -->
+                    <div class="table-footer p-4 border-top">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="table-info">
+                                <span class="text-muted">
+                                    Mostrando <strong id="showingCount">{{ reservas|length }}</strong> de <strong>{{ reservas|length }}</strong> pasajeros
+                                </span>
+                            </div>
+                            <div class="table-actions">
+                                <button class="btn btn-outline-primary btn-sm" onclick="selectAllRows()">
+                                    <i class="bi bi-check-all"></i>
+                                    Seleccionar Todo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% elif vuelo_seleccionado %}
+        <!-- Estado vacío -->
+        <div class="empty-state text-center">
+            <div class="empty-icon mb-4">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: var(--aurora-primary); opacity: 0.5;"></i>
+            </div>
+            <h3 class="gradient-text mb-3">No hay pasajeros registrados</h3>
+            <p class="text-muted mb-4">Este vuelo aún no tiene reservas confirmadas. Los pasajeros aparecerán aquí una vez que se realicen las reservas.</p>
+            <div class="empty-actions">
+                <a href="{% url 'reservar_asiento' %}" class="btn btn-aurora-primary me-3">
+                    <i class="bi bi-plus-circle"></i>
+                    Nueva Reserva
+                </a>
+                <button class="btn btn-outline-primary" onclick="location.reload()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Actualizar
+                </button>
+            </div>
+        </div>
+    {% endif %}
 </div>
-{% endif %}
 
-{% if reservas %}
-<table>
-    <thead>
-        <tr>
-            <th>Pasajero</th>
-            <th>Documento</th>
-            <th>Asiento</th>
-            <th>Precio</th>
-            <th>Código Reserva</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for reserva in reservas %}
-        <tr>
-            <td>{{ reserva.pasajero.nombre }}</td>
-            <td>{{ reserva.pasajero.documento }}</td>
-            <td>{{ reserva.asiento.numero }}</td>
-            <td>${{ reserva.precio }}</td>
-            <td>{{ reserva.codigo_reserva }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% elif vuelo_seleccionado %}
-    <p class="mensaje">No hay reservas para este vuelo.</p>
-{% endif %}
+<style>
+    .reporte-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
 
+    .page-header {
+        position: relative;
+        padding: 2rem 0;
+    }
+
+    .divider {
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        border-radius: 2px;
+        margin-top: 1rem;
+    }
+
+    .bg-gradient {
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary)) !important;
+    }
+
+    /* Header de cards */
+    .card-header-custom {
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        color: white;
+        padding: 1.5rem;
+        border-radius: 20px 20px 0 0;
+    }
+
+    /* Formulario de selección */
+    .flight-form .form-select {
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .flight-form .form-select:focus {
+        border-color: var(--aurora-primary);
+        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        background: white;
+    }
+
+    .required {
+        color: #ef4444;
+        font-weight: bold;
+    }
+
+    /* Vista previa del vuelo */
+    .flight-preview {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .preview-card {
+        background: rgba(37, 99, 235, 0.05);
+        border: 2px solid rgba(37, 99, 235, 0.1);
+        border-radius: 15px;
+        padding: 1.5rem;
+    }
+
+    .flight-route-preview {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .city-preview {
+        text-align: center;
+        flex: 1;
+    }
+
+    .city-code {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--aurora-primary);
+    }
+
+    .city-name {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+
+    .flight-arrow-preview {
+        margin: 0 2rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .arrow-line {
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+    }
+
+    .airplane-icon {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--aurora-primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .flight-info-preview {
+        text-align: center;
+    }
+
+    .flight-date {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    /* Estadísticas */
+    .stat-card-report {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(37, 99, 235, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-card-report:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .stat-icon.passengers {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .stat-icon.revenue {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .stat-icon.occupancy {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .stat-icon.seats {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .stat-content h3 {
+        font-size: 1.75rem;
+        font-weight: bold;
+        color: var(--aurora-primary);
+        margin-bottom: 0.25rem;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* Botones de exportación */
+    .export-actions .btn {
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .export-actions .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Tabla de pasajeros */
+    .passengers-table {
+        font-size: 0.9rem;
+    }
+
+    .passengers-table th {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        border: none;
+        padding: 1rem 0.75rem;
+        font-weight: 600;
+        color: #374151;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .passengers-table th:hover {
+        background: rgba(37, 99, 235, 0.05);
+    }
+
+    .passengers-table th.sortable {
+        user-select: none;
+    }
+
+    .sort-icon {
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+        opacity: 0.5;
+        transition: all 0.3s ease;
+    }
+
+    .passengers-table th:hover .sort-icon {
+        opacity: 1;
+    }
+
+    .passengers-table td {
+        padding: 1rem 0.75rem;
+        border: none;
+        border-bottom: 1px solid #f3f4f6;
+        vertical-align: middle;
+    }
+
+    .passengers-table tbody tr:hover {
+        background: rgba(37, 99, 235, 0.02);
+    }
+
+    /* Celdas especializadas */
+    .passenger-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .passenger-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+
+    .passenger-name {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+    }
+
+    .passenger-email {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    .document-number {
+        font-family: 'Courier New', monospace;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    .seat-badge {
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 0.875rem;
+    }
+
+    .price-amount {
+        font-weight: bold;
+        color: #059669;
+        font-size: 1rem;
+    }
+
+    .reservation-code {
+        font-family: 'Courier New', monospace;
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--aurora-primary);
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-badge.confirmed {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+    /* Filtros de tabla */
+    .table-filters {
+        background: rgba(37, 99, 235, 0.02);
+    }
+
+    .table-filters .input-group-text {
+        background: white;
+        border-color: #e5e7eb;
+        color: var(--aurora-primary);
+    }
+
+    .table-filters .form-control {
+        border-color: #e5e7eb;
+    }
+
+    .table-filters .form-control:focus {
+        border-color: var(--aurora-primary);
+        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+    }
+
+    /* Estado vacío */
+    .empty-state {
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    /* Botones principales */
+    .btn-aurora-primary {
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-aurora-primary:hover {
+        background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .flight-route-preview {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .flight-arrow-preview {
+            transform: rotate(90deg);
+            margin: 0;
+        }
+
+        .stat-card-report {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .export-buttons {
+            width: 100%;
+        }
+
+        .export-buttons .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .passengers-table {
+            font-size: 0.8rem;
+        }
+
+        .passenger-info {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const vueloSelect = document.getElementById('vuelo_id');
+        const flightPreview = document.getElementById('flightPreview');
+        const consultarBtn = document.getElementById('consultarBtn');
+        const btnText = consultarBtn.querySelector('.btn-text');
+        const btnLoading = consultarBtn.querySelector('.btn-loading');
+
+        // Mostrar vista previa del vuelo seleccionado
+        vueloSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            
+            if (selectedOption.value) {
+                const origen = selectedOption.dataset.origen;
+                const destino = selectedOption.dataset.destino;
+                const fecha = selectedOption.dataset.fecha;
+
+                document.getElementById('origenCode').textContent = origen.substring(0, 3).toUpperCase();
+                document.getElementById('origenName').textContent = origen;
+                document.getElementById('destinoCode').textContent = destino.substring(0, 3).toUpperCase();
+                document.getElementById('destinoName').textContent = destino;
+                document.getElementById('fechaVuelo').textContent = fecha;
+
+                flightPreview.style.display = 'block';
+            } else {
+                flightPreview.style.display = 'none';
+            }
+        });
+
+        // Manejo del envío del formulario
+        document.getElementById('vueloForm').addEventListener('submit', function(e) {
+            if (vueloSelect.value) {
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline-flex';
+                consultarBtn.disabled = true;
+            }
+        });
+
+        // Funcionalidad de búsqueda
+        const searchPassenger = document.getElementById('searchPassenger');
+        const searchSeat = document.getElementById('searchSeat');
+        
+        if (searchPassenger && searchSeat) {
+            searchPassenger.addEventListener('input', filterTable);
+            searchSeat.addEventListener('input', filterTable);
+        }
+
+        function filterTable() {
+            const passengerFilter = searchPassenger.value.toLowerCase();
+            const seatFilter = searchSeat.value.toLowerCase();
+            const rows = document.querySelectorAll('.passenger-row');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const passengerName = row.dataset.passenger;
+                const seatNumber = row.dataset.seat.toLowerCase();
+                
+                const matchesPassenger = !passengerFilter || passengerName.includes(passengerFilter);
+                const matchesSeat = !seatFilter || seatNumber.includes(seatFilter);
+                
+                if (matchesPassenger && matchesSeat) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Actualizar contador
+            const showingCount = document.getElementById('showingCount');
+            if (showingCount) {
+                showingCount.textContent = visibleCount;
+            }
+        }
+
+        // Funcionalidad de ordenamiento
+        const sortableHeaders = document.querySelectorAll('.sortable');
+        sortableHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const sortType = this.dataset.sort;
+                sortTable(sortType, this);
+            });
+        });
+
+        function sortTable(sortType, header) {
+            const table = document.getElementById('passengersTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // Determinar dirección de ordenamiento
+            const isAscending = !header.classList.contains('sort-asc');
+            
+            // Limpiar clases de ordenamiento anteriores
+            sortableHeaders.forEach(h => {
+                h.classList.remove('sort-asc', 'sort-desc');
+                h.querySelector('.sort-icon').className = 'bi bi-chevron-expand sort-icon';
+            });
+            
+            // Aplicar nueva clase de ordenamiento
+            header.classList.add(isAscending ? 'sort-asc' : 'sort-desc');
+            header.querySelector('.sort-icon').className = `bi bi-chevron-${isAscending ? 'up' : 'down'} sort-icon`;
+            
+            // Ordenar filas
+            rows.sort((a, b) => {
+                let aValue, bValue;
+                
+                switch(sortType) {
+                    case 'passenger':
+                        aValue = a.querySelector('.passenger-name').textContent.trim();
+                        bValue = b.querySelector('.passenger-name').textContent.trim();
+                        break;
+                    case 'document':
+                        aValue = a.querySelector('.document-number').textContent.trim();
+                        bValue = b.querySelector('.document-number').textContent.trim();
+                        break;
+                    case 'seat':
+                        aValue = a.querySelector('.seat-badge').textContent.trim();
+                        bValue = b.querySelector('.seat-badge').textContent.trim();
+                        break;
+                    case 'price':
+                        aValue = parseFloat(a.querySelector('.price-amount').textContent.replace('$', ''));
+                        bValue = parseFloat(b.querySelector('.price-amount').textContent.replace('$', ''));
+                        break;
+                    case 'code':
+                        aValue = a.querySelector('.reservation-code').textContent.trim();
+                        bValue = b.querySelector('.reservation-code').textContent.trim();
+                        break;
+                }
+                
+                if (typeof aValue === 'number') {
+                    return isAscending ? aValue - bValue : bValue - aValue;
+                } else {
+                    return isAscending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+                }
+            });
+            
+            // Reordenar en el DOM
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Inicializar vista previa si hay vuelo seleccionado
+        if (vueloSelect.value) {
+            vueloSelect.dispatchEvent(new Event('change'));
+        }
+    });
+
+    // Funciones globales
+    function clearFilters() {
+        document.getElementById('searchPassenger').value = '';
+        document.getElementById('searchSeat').value = '';
+        
+        const rows = document.querySelectorAll('.passenger-row');
+        rows.forEach(row => row.style.display = '');
+        
+        const showingCount = document.getElementById('showingCount');
+        if (showingCount) {
+            showingCount.textContent = rows.length;
+        }
+    }
+
+    function selectAllRows() {
+        const rows = document.querySelectorAll('.passenger-row');
+        rows.forEach(row => {
+            row.style.background = 'rgba(37, 99, 235, 0.1)';
+            setTimeout(() => {
+                row.style.background = '';
+            }, 1000);
+        });
+    }
+</script>
 {% endblock %}

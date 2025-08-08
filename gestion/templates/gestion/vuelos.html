@@ -1,31 +1,616 @@
-
 {% extends 'gestion/base.html' %}
-{% block title %}Vuelos Disponibles{% endblock %}
+
+{% block title %}Vuelos Disponibles - Aurora Airlines{% endblock %}
+
 {% block content %}
-
-<h1>Vuelos Disponibles</h1>
-
-{% if vuelos %}
-    {% for vuelo in vuelos %}
-        <div style="margin-bottom: 15px; padding: 10px; background: #fff; border: 1px solid #ccc;">
-            <p><strong>Origen:</strong> {{ vuelo.origen }}</p>
-            <p><strong>Destino:</strong> {{ vuelo.destino }}</p>
-            <p><strong>Fecha de salida:</strong> {{ vuelo.fecha_salida }}</p>
-            <p><strong>Precio:</strong> ${{ vuelo.precio_base }}</p>
+<div class="vuelos-container">
+    <!-- Header de la página -->
+    <div class="page-header text-center mb-5">
+        <div class="d-inline-block p-3 rounded-circle bg-gradient mb-3" style="background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));">
+            <i class="bi bi-airplane text-white" style="font-size: 2rem;"></i>
         </div>
-    {% endfor %}
-{% else %}
-    <p>No hay vuelos disponibles.</p>
-{% endif %}
-{% if vuelo.origen and vuelo.destino %}
-<iframe
-  width="100%"
-  height="450"
-  style="border:0"
-  loading="lazy"
-  allowfullscreen
-  referrerpolicy="no-referrer-when-downgrade"
-  src="https://www.google.com/maps/embed/v1/directions?key=TU_CLAVE_API&origin={{ vuelo.origen }}&destination={{ vuelo.destino }}">
-</iframe>
-{% endif %}
+        <h1 class="display-4 gradient-text mb-3">Vuelos Disponibles</h1>
+        <p class="lead text-muted">Descubre nuestros destinos y encuentra el vuelo perfecto para ti</p>
+        <div class="divider mx-auto"></div>
+    </div>
+
+    {% if vuelos %}
+        <!-- Filtros y búsqueda -->
+        <div class="search-filters mb-4">
+            <div class="aurora-card">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-gradient text-white">
+                                <i class="bi bi-geo-alt"></i>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Buscar origen..." id="filtroOrigen">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-gradient text-white">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Buscar destino..." id="filtroDestino">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-gradient text-white">
+                                <i class="bi bi-calendar"></i>
+                            </span>
+                            <input type="date" class="form-control" id="filtroFecha">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-aurora-primary w-100" onclick="filtrarVuelos()">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contador de vuelos -->
+        <div class="vuelos-stats mb-4">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="stat-card text-center">
+                        <div class="stat-icon">
+                            <i class="bi bi-airplane"></i>
+                        </div>
+                        <h3 class="stat-number">{{ vuelos|length }}</h3>
+                        <p class="stat-label">Vuelos Disponibles</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card text-center">
+                        <div class="stat-icon">
+                            <i class="bi bi-geo"></i>
+                        </div>
+                        <h3 class="stat-number">{{ vuelos|length }}</h3>
+                        <p class="stat-label">Destinos</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card text-center">
+                        <div class="stat-icon">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                        <h3 class="stat-number">24/7</h3>
+                        <p class="stat-label">Disponibilidad</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card text-center">
+                        <div class="stat-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h3 class="stat-number">100%</h3>
+                        <p class="stat-label">Seguridad</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de vuelos -->
+        <div class="vuelos-grid" id="vuelosContainer">
+            {% for vuelo in vuelos %}
+                <div class="vuelo-card" data-origen="{{ vuelo.origen|lower }}" data-destino="{{ vuelo.destino|lower }}" data-fecha="{{ vuelo.fecha_salida|date:'Y-m-d' }}">
+                    <div class="vuelo-header">
+                        <div class="vuelo-route">
+                            <div class="city-info">
+                                <div class="city-code">{{ vuelo.origen|slice:":3"|upper }}</div>
+                                <div class="city-name">{{ vuelo.origen }}</div>
+                            </div>
+                            <div class="flight-path">
+                                <div class="flight-line"></div>
+                                <div class="airplane-icon">
+                                    <i class="bi bi-airplane"></i>
+                                </div>
+                            </div>
+                            <div class="city-info">
+                                <div class="city-code">{{ vuelo.destino|slice:":3"|upper }}</div>
+                                <div class="city-name">{{ vuelo.destino }}</div>
+                            </div>
+                        </div>
+                        <div class="vuelo-badge">
+                            <i class="bi bi-star-fill"></i>
+                            Disponible
+                        </div>
+                    </div>
+
+                    <div class="vuelo-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="vuelo-detail">
+                                    <i class="bi bi-calendar-event text-primary"></i>
+                                    <div>
+                                        <strong>Fecha de Salida</strong>
+                                        <p class="mb-0">{{ vuelo.fecha_salida|date:"d M Y" }}</p>
+                                        <small class="text-muted">{{ vuelo.fecha_salida|date:"l" }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="vuelo-detail">
+                                    <i class="bi bi-clock text-success"></i>
+                                    <div>
+                                        <strong>Hora de Salida</strong>
+                                        <p class="mb-0">{{ vuelo.fecha_salida|date:"H:i" }}</p>
+                                        <small class="text-muted">Hora local</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="vuelo-amenities mt-3">
+                            <span class="amenity-tag">
+                                <i class="bi bi-wifi"></i> WiFi Gratis
+                            </span>
+                            <span class="amenity-tag">
+                                <i class="bi bi-cup-hot"></i> Comida Incluida
+                            </span>
+                            <span class="amenity-tag">
+                                <i class="bi bi-luggage"></i> Equipaje 23kg
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="vuelo-footer">
+                        <div class="precio-section">
+                            <div class="precio-label">Desde</div>
+                            <div class="precio-amount">${{ vuelo.precio_base }}</div>
+                            <div class="precio-note">por persona</div>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline-primary btn-sm" onclick="verDetalles({{ vuelo.id }})">
+                                <i class="bi bi-info-circle"></i> Detalles
+                            </button>
+                            <a href="{% url 'reservar_asiento' %}" class="btn btn-aurora-primary">
+                                <i class="bi bi-calendar-plus"></i> Reservar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Mapa mejorado -->
+        {% if vuelos.0.origen and vuelos.0.destino %}
+        <div class="mapa-section mt-5">
+            <div class="aurora-card">
+                <div class="card-header-custom">
+                    <h3 class="mb-0">
+                        <i class="bi bi-map"></i>
+                        Rutas de Vuelo
+                    </h3>
+                    <p class="mb-0 text-muted">Visualiza nuestras rutas en el mapa</p>
+                </div>
+                <div class="map-container">
+                    <iframe  
+                        width="100%"  
+                        height="450"  
+                        style="border:0; border-radius: 15px;"  
+                        loading="lazy"  
+                        allowfullscreen  
+                        referrerpolicy="no-referrer-when-downgrade"  
+                        src="https://www.google.com/maps/embed/v1/directions?key=TU_CLAVE_API&origin={{ vuelos.0.origen }}&destination={{ vuelos.0.destino }}&mode=flying">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <!-- Estado vacío -->
+        <div class="empty-state text-center">
+            <div class="empty-icon mb-4">
+                <i class="bi bi-airplane" style="font-size: 4rem; color: var(--aurora-primary); opacity: 0.5;"></i>
+            </div>
+            <h3 class="gradient-text mb-3">No hay vuelos disponibles</h3>
+            <p class="text-muted mb-4">En este momento no tenemos vuelos programados. Te invitamos a revisar más tarde o contactar a nuestro equipo de soporte.</p>
+            <div class="empty-actions">
+                <a href="{% url 'reservar_asiento' %}" class="btn btn-aurora-primary me-3">
+                    <i class="bi bi-plus-circle"></i> Programar Vuelo
+                </a>
+                <button class="btn btn-outline-primary" onclick="location.reload()">
+                    <i class="bi bi-arrow-clockwise"></i> Actualizar
+                </button>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .vuelos-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        position: relative;
+        padding: 2rem 0;
+    }
+
+    .divider {
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        border-radius: 2px;
+        margin-top: 1rem;
+    }
+
+    .bg-gradient {
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary)) !important;
+    }
+
+    .search-filters .input-group-text {
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        border: none;
+    }
+
+    .vuelos-stats {
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(37, 99, 235, 0.1);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--aurora-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: #6b7280;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .vuelos-grid {
+        display: grid;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .vuelo-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(37, 99, 235, 0.1);
+        overflow: hidden;
+    }
+
+    .vuelo-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .vuelo-header {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+    }
+
+    .vuelo-route {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .city-info {
+        text-align: center;
+    }
+
+    .city-code {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--aurora-primary);
+    }
+
+    .city-name {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+    }
+
+    .flight-path {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-width: 120px;
+    }
+
+    .flight-line {
+        height: 2px;
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        flex: 1;
+        position: relative;
+    }
+
+    .airplane-icon {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--aurora-primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .vuelo-badge {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .vuelo-body {
+        padding: 1.5rem;
+    }
+
+    .vuelo-detail {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(37, 99, 235, 0.05);
+        border-radius: 10px;
+    }
+
+    .vuelo-detail i {
+        font-size: 1.25rem;
+        margin-top: 0.25rem;
+    }
+
+    .vuelo-detail strong {
+        display: block;
+        color: #374151;
+        margin-bottom: 0.25rem;
+    }
+
+    .vuelo-amenities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .amenity-tag {
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--aurora-primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .vuelo-footer {
+        padding: 1.5rem;
+        background: rgba(248, 250, 252, 0.8);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(37, 99, 235, 0.1);
+    }
+
+    .precio-section {
+        text-align: left;
+    }
+
+    .precio-label {
+        font-size: 0.8rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .precio-amount {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--aurora-primary);
+        line-height: 1;
+    }
+
+    .precio-note {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+        color: white;
+        padding: 1.5rem;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .map-container {
+        padding: 1.5rem;
+    }
+
+    .empty-state {
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .empty-actions {
+        margin-top: 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .vuelo-route {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .flight-path {
+            transform: rotate(90deg);
+            min-width: 60px;
+        }
+
+        .vuelo-footer {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .action-buttons {
+            justify-content: center;
+        }
+
+        .vuelos-stats .row {
+            gap: 1rem;
+        }
+    }
+</style>
+
+<script>
+    // Función para filtrar vuelos
+    function filtrarVuelos() {
+        const origen = document.getElementById('filtroOrigen').value.toLowerCase();
+        const destino = document.getElementById('filtroDestino').value.toLowerCase();
+        const fecha = document.getElementById('filtroFecha').value;
+        
+        const vuelos = document.querySelectorAll('.vuelo-card');
+        let vuelosVisibles = 0;
+        
+        vuelos.forEach(vuelo => {
+            const vueloOrigen = vuelo.dataset.origen;
+            const vueloDestino = vuelo.dataset.destino;
+            const vueloFecha = vuelo.dataset.fecha;
+            
+            const coincideOrigen = !origen || vueloOrigen.includes(origen);
+            const coincideDestino = !destino || vueloDestino.includes(destino);
+            const coincideFecha = !fecha || vueloFecha === fecha;
+            
+            if (coincideOrigen && coincideDestino && coincideFecha) {
+                vuelo.style.display = 'block';
+                vuelo.style.animation = 'fadeInUp 0.5s ease-out';
+                vuelosVisibles++;
+            } else {
+                vuelo.style.display = 'none';
+            }
+        });
+        
+        // Mostrar mensaje si no hay resultados
+        if (vuelosVisibles === 0) {
+            mostrarMensajeNoResultados();
+        } else {
+            ocultarMensajeNoResultados();
+        }
+    }
+
+    function mostrarMensajeNoResultados() {
+        const container = document.getElementById('vuelosContainer');
+        if (!document.getElementById('noResultados')) {
+            const mensaje = document.createElement('div');
+            mensaje.id = 'noResultados';
+            mensaje.className = 'text-center py-5';
+            mensaje.innerHTML = `
+                <div class="empty-icon mb-3">
+                    <i class="bi bi-search" style="font-size: 3rem; color: var(--aurora-primary); opacity: 0.5;"></i>
+                </div>
+                <h4 class="text-muted">No se encontraron vuelos</h4>
+                <p class="text-muted">Intenta ajustar tus filtros de búsqueda</p>
+                <button class="btn btn-outline-primary" onclick="limpiarFiltros()">
+                    <i class="bi bi-arrow-clockwise"></i> Limpiar Filtros
+                </button>
+            `;
+            container.appendChild(mensaje);
+        }
+    }
+
+    function ocultarMensajeNoResultados() {
+        const mensaje = document.getElementById('noResultados');
+        if (mensaje) {
+            mensaje.remove();
+        }
+    }
+
+    function limpiarFiltros() {
+        document.getElementById('filtroOrigen').value = '';
+        document.getElementById('filtroDestino').value = '';
+        document.getElementById('filtroFecha').value = '';
+        filtrarVuelos();
+    }
+
+    function verDetalles(vueloId) {
+        // Aquí puedes implementar la lógica para mostrar detalles del vuelo
+        alert(`Ver detalles del vuelo ID: ${vueloId}`);
+    }
+
+    // Animaciones al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.vuelo-card, .stat-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
 {% endblock %}
