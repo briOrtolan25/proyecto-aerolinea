@@ -1,37 +1,27 @@
-{% load static %}  {# Carga la etiqueta 'static' para incluir archivos estáticos como imágenes, CSS, etc. #}
+{% load static %}  {# Para cargar archivos estáticos como CSS, JS, imágenes #}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-<<<<<<< HEAD
-    <title>{% block title %}Aurora Airlines - Vuela hacia tus sueños{% endblock %}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <title>{% block title %}Aurora Airlines{% endblock %}</title>
+    
     <!-- Bootstrap CSS (CDN) -->
-=======
-    <title>{% block title %}Aerolínea{% endblock %}</title>  {# Bloque de título dinámico para herencia de plantillas #}
-
-    <!-- Bootstrap CSS (CDN) para estilos y componentes predefinidos -->
->>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+    
     <style>
-<<<<<<< HEAD
-        :root {
-            --aurora-primary: #2563eb;
-            --aurora-secondary: #9333ea;
-            --aurora-accent: #51e9d5;
-            --aurora-dark: #55369e;
-            --aurora-light: #bee4f7;
-        }
-
+        /* Estilos generales */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--aurora-light) 0%, #ffffff 100%);
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #bee4f7, #ffffff);
             margin: 0;
-            padding-bottom: 80px; /* Espacio para footer fijo */
+            padding-bottom: 80px; /* espacio para footer fijo */
         }
 
-        /* Header mejorado */
+        /* Header */
         .aurora-header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -48,129 +38,127 @@
             gap: 0.5rem;
             text-decoration: none;
             color: inherit;
+            font-weight: bold;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #2563eb, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .aurora-logo-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+            background: linear-gradient(135deg, #2563eb, #9333ea);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
         }
 
-        .aurora-logo-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* Navbar */
+        .navbar-nav .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #2563eb !important;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background: linear-gradient(135deg, #2563eb, #9333ea);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-link:hover::after {
+            width: 100%;
         }
 
-        /* Carrusel mejorado */
-=======
-        /* Estilo general del cuerpo */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #bee4f7ff;  /* Color de fondo celeste claro */
-            margin: 0;
-        }
-
-        /* Estilo para las imágenes del carrusel */
->>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
+        /* Carousel images */
         .carousel-item img {
             height: 400px;
             object-fit: cover;
             width: 100%;
             filter: brightness(0.8);
         }
-
-        /* Estilos para los textos del carrusel */
+        /* Carousel caption */
         .carousel-caption {
             background: rgba(0, 0, 0, 0.6);
             border-radius: 15px;
-            padding: 2rem;
+            padding: 1.5rem;
             backdrop-filter: blur(10px);
         }
-
         .carousel-caption h5 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: bold;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
         }
-
         .carousel-caption p {
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-            opacity: 0.9;
-        }
-
-<<<<<<< HEAD
-        .carousel-caption .btn {
-            margin: 0.5rem;
             font-size: 1.1rem;
-            padding: 0.75rem 2rem;
-            border-radius: 50px;
-            transition: all 0.3s ease;
+            opacity: 0.9;
+            color: white;
         }
 
-        /* Botones personalizados */
+        /* Buttons */
         .btn-aurora-primary {
-            background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+            background: linear-gradient(135deg, #2563eb, #9333ea);
             color: white;
             border: none;
+            border-radius: 50px;
+            padding: 0.6rem 2rem;
             transition: all 0.3s ease;
         }
-
         .btn-aurora-primary:hover {
             background: linear-gradient(135deg, #1d4ed8, #7c3aed);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
             color: white;
         }
-
         .btn-custom {
-            background: linear-gradient(135deg, var(--aurora-accent), #10b981);
+            background: linear-gradient(135deg, #51e9d5, #10b981);
             color: white;
             border: none;
-            transition: all 0.3s ease;
             border-radius: 50px;
+            padding: 0.6rem 2rem;
+            transition: all 0.3s ease;
         }
-
         .btn-custom:hover {
             background: linear-gradient(135deg, #0d9488, #059669);
             transform: translateY(-2px);
             color: white;
         }
 
-        /* Secciones de contenido */
+        /* Section cards */
         .aurora-section {
             padding: 4rem 0;
         }
-
         .aurora-card {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255,255,255,0.9);
             border-radius: 20px;
             padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             border: 1px solid rgba(37, 99, 235, 0.1);
+            text-align: center;
+            height: 100%;
         }
-
         .aurora-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
-
         .aurora-icon {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
+            background: linear-gradient(135deg, #2563eb, #9333ea);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -180,17 +168,9 @@
             margin: 0 auto 1rem;
         }
 
-        /* Gradientes de texto */
-        .gradient-text {
-            background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Footer mejorado */
+        /* Footer */
         .footer-aurora {
-            background: linear-gradient(135deg, var(--aurora-dark), var(--aurora-primary));
+            background: linear-gradient(135deg, #55369e, #2563eb);
             color: white;
             padding: 15px 20px;
             display: flex;
@@ -204,352 +184,159 @@
             box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
             backdrop-filter: blur(10px);
         }
-
         .footer-aurora p {
             margin: 0;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-
         .footer-aurora i {
             font-size: 16px;
-        }
-
-        /* Animaciones */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .carousel-caption h5 {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
             }
-            
             .carousel-caption p {
                 font-size: 1rem;
             }
-            
             .footer-aurora {
                 flex-direction: column;
                 gap: 0.5rem;
                 padding: 10px;
                 font-size: 12px;
             }
-            
-            .aurora-logo-text {
+            .aurora-logo {
                 font-size: 1.2rem;
             }
         }
-
-        /* Efectos de hover para navegación */
-        .navbar-nav .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: var(--aurora-primary) !important;
-        }
-
-        .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 50%;
-            background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-
-        .navbar-nav .nav-link:hover::after {
-            width: 100%;
-        }
-
-        /* Contenedor principal */
-=======
-        /* Padding general del contenido */
->>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
-        .container {
-            padding: 30px 15px;
-        }
-<<<<<<< HEAD
-
-        /* Mejoras para el contenido */
-        .content-section {
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 20px;
-            padding: 2rem;
-            margin: 2rem 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
     </style>
 </head>
+
 <body>
-    <!-- Header con navegación -->
+    <!-- Header con navbar -->
     <header class="aurora-header">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg">
-                <a class="aurora-logo" href="{% url 'vuelos_disponibles' %}">
-                    <div class="aurora-logo-icon">
-                        <i class="bi bi-airplane"></i>
-                    </div>
-                    <span class="aurora-logo-text">Aurora Airlines</span>
-                </a>
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'vuelos_disponibles' %}">
-                                <i class="bi bi-house"></i> Inicio
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'reservar_asiento' %}">
-                                <i class="bi bi-calendar-check"></i> Reservas
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'reporte_pasajeros' %}">
-                                <i class="bi bi-graph-up"></i> Reportes
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="aurora-logo" href="{% url 'vuelos_disponibles' %}">
+                <div class="aurora-logo-icon"><i class="bi bi-airplane"></i></div>
+                Aurora Airlines
+            </a>
+
+            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <nav class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-3">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'vuelos_disponibles' %}"><i class="bi bi-house"></i> Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'reservar_asiento' %}"><i class="bi bi-calendar-check"></i> Reservas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'reporte_pasajeros' %}"><i class="bi bi-graph-up"></i> Reportes</a></li>
+                </ul>
             </nav>
-=======
-        
-        /* Estilo del pie de página */
-        .footer-aurora {
-            background-color: #55369eff;  /* Azul oscuro/morado */
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            font-size: 14px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 100;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.3);  /* Sombra superior */
-        }
-
-        .footer-aurora p {
-            margin: 0;
-        }
-
-        /* Estilo personalizado para botones */
-        .btn-custom {
-            background-color: #51e9d5ff;  /* Verde agua */
-            color: white;
-            border: none;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-custom:hover {
-            background-color: #ada6a6ff;  /* Gris claro al pasar el mouse */
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- Carrusel principal de navegación -->
-    <div id="navCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" data-bs-pause="hover">
-        <div class="carousel-inner">
-
-            <!-- Slide 1: Ir a vuelos disponibles -->
-            <div class="carousel-item active">
-                <img src="{% static '1.png' %}" class="d-block w-100" alt="1.png">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Vuelos Disponibles</h5>
-                    <a href="{% url 'vuelos_disponibles' %}" class="btn btn-custom">Ir a Inicio</a>
-                </div>
-            </div>
-
-            <!-- Slide 2: Ir a reservas -->
-            <div class="carousel-item">
-                <img src="{% static 'home.png' %}" class="d-block w-100" alt="home.png">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Reservar</h5>
-                    <a href="{% url 'reservar_asiento' %}" class="btn btn-light">Ir a Reservas</a>
-                </div>
-            </div>
-
-            <!-- Slide 3: Ir a reportes -->
-            <div class="carousel-item">
-                <img src="{% static 'reportes.png' %}" class="d-block w-100" alt="reportes.png">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Reportes</h5>
-                    <a href="{% url 'reporte_pasajeros' %}" class="btn btn-light">Ver Reportes</a>
-                </div>
-            </div>
-
->>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
         </div>
     </header>
 
-<<<<<<< HEAD
-    <!-- Carrusel Hero mejorado -->
+    <!-- Carrusel principal -->
     <div id="navCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000" data-bs-pause="hover">
         <div class="carousel-indicators">
-            <button type="button" data-bs-target="#navCarousel" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#navCarousel" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#navCarousel" data-bs-slide-to="2"></button>
+            <button type="button" data-bs-target="#navCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#navCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#navCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
-        
+
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="{% static '1.png' %}" class="d-block w-100" alt="Vuelos Disponibles">
+                <img src="{% static '1.png' %}" class="d-block w-100" alt="Vuelos Disponibles" />
                 <div class="carousel-caption">
-                    <h5 class="fade-in-up">✈️ Descubre el Mundo</h5>
-                    <p class="fade-in-up">Conectamos más de 150 destinos con el mejor servicio y precios competitivos</p>
-                    <a href="{% url 'vuelos_disponibles' %}" class="btn btn-aurora-primary btn-lg">
-                        <i class="bi bi-search"></i> Ver Vuelos Disponibles
-                    </a>
-                    <a href="#servicios" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-info-circle"></i> Conoce Más
-                    </a>
+                    <h5>✈️ Descubre el Mundo</h5>
+                    <p>Conectamos más de 150 destinos con el mejor servicio y precios competitivos</p>
+                    <a href="{% url 'vuelos_disponibles' %}" class="btn btn-aurora-primary"><i class="bi bi-search"></i> Ver Vuelos</a>
+                    <a href="#servicios" class="btn btn-light ms-2"><i class="bi bi-info-circle"></i> Conoce Más</a>
                 </div>
             </div>
-            
             <div class="carousel-item">
-                <img src="{% static 'home.png' %}" class="d-block w-100" alt="Reservar">
+                <img src="{% static 'home.png' %}" class="d-block w-100" alt="Reservar" />
                 <div class="carousel-caption">
-                    <h5 class="fade-in-up">🎫 Reserva Fácil y Rápida</h5>
-                    <p class="fade-in-up">Sistema de reservas intuitivo con confirmación inmediata y mejores tarifas</p>
-                    <a href="{% url 'reservar_asiento' %}" class="btn btn-custom btn-lg">
-                        <i class="bi bi-calendar-plus"></i> Reservar Ahora
-                    </a>
-                    <a href="#destinos" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-geo-alt"></i> Ver Destinos
-                    </a>
+                    <h5>🎫 Reserva Fácil y Rápida</h5>
+                    <p>Sistema de reservas intuitivo con confirmación inmediata y mejores tarifas</p>
+                    <a href="{% url 'reservar_asiento' %}" class="btn btn-custom"><i class="bi bi-calendar-plus"></i> Reservar Ahora</a>
+                    <a href="#destinos" class="btn btn-light ms-2"><i class="bi bi-geo-alt"></i> Ver Destinos</a>
                 </div>
             </div>
-            
             <div class="carousel-item">
-                <img src="{% static 'reportes.png' %}" class="d-block w-100" alt="Reportes">
+                <img src="{% static 'reportes.png' %}" class="d-block w-100" alt="Reportes" />
                 <div class="carousel-caption">
-                    <h5 class="fade-in-up">📊 Gestión Inteligente</h5>
-                    <p class="fade-in-up">Reportes detallados y estadísticas en tiempo real para mejor control</p>
-                    <a href="{% url 'reporte_pasajeros' %}" class="btn btn-aurora-primary btn-lg">
-                        <i class="bi bi-bar-chart"></i> Ver Reportes
-                    </a>
-                    <a href="#contacto" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-headset"></i> Soporte
-                    </a>
+                    <h5>📊 Gestión Inteligente</h5>
+                    <p>Reportes detallados y estadísticas en tiempo real para mejor control</p>
+                    <a href="{% url 'reporte_pasajeros' %}" class="btn btn-aurora-primary"><i class="bi bi-bar-chart"></i> Ver Reportes</a>
+                    <a href="#contacto" class="btn btn-light ms-2"><i class="bi bi-headset"></i> Soporte</a>
                 </div>
             </div>
         </div>
-        
-=======
-        <!-- Botón anterior del carrusel -->
->>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
+
         <button class="carousel-control-prev" type="button" data-bs-target="#navCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Anterior</span>
         </button>
-
-        <!-- Botón siguiente del carrusel -->
         <button class="carousel-control-next" type="button" data-bs-target="#navCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Siguiente</span>
         </button>
     </div>
 
-<<<<<<< HEAD
-    <!-- Sección de servicios destacados -->
+    <!-- Sección Servicios Destacados -->
     <section id="servicios" class="aurora-section">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="display-4 gradient-text mb-3">¿Por qué elegir Aurora Airlines?</h2>
-                <p class="lead text-muted">Experiencia de vuelo excepcional con servicios de primera clase</p>
-            </div>
-            
+        <div class="container text-center">
+            <h2 class="mb-4" style="background: linear-gradient(135deg, #2563eb, #9333ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">¿Por qué elegir Aurora Airlines?</h2>
+            <p class="lead text-muted mb-5">Experiencia de vuelo excepcional con servicios de primera clase</p>
             <div class="row g-4">
                 <div class="col-md-4">
-                    <div class="aurora-card text-center h-100">
-                        <div class="aurora-icon">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
+                    <div class="aurora-card">
+                        <div class="aurora-icon"><i class="bi bi-shield-check"></i></div>
                         <h4>Seguridad Garantizada</h4>
-                        <p class="text-muted">Flota moderna con los más altos estándares de seguridad y mantenimiento certificado.</p>
+                        <p>Flota moderna con los más altos estándares de seguridad y mantenimiento certificado.</p>
                     </div>
                 </div>
-                
                 <div class="col-md-4">
-                    <div class="aurora-card text-center h-100">
-                        <div class="aurora-icon">
-                            <i class="bi bi-clock"></i>
-                        </div>
+                    <div class="aurora-card">
+                        <div class="aurora-icon"><i class="bi bi-clock"></i></div>
                         <h4>Puntualidad</h4>
-                        <p class="text-muted">95% de puntualidad en nuestros vuelos. Tu tiempo es valioso para nosotros.</p>
+                        <p>95% de puntualidad en nuestros vuelos. Tu tiempo es valioso para nosotros.</p>
                     </div>
                 </div>
-                
                 <div class="col-md-4">
-                    <div class="aurora-card text-center h-100">
-                        <div class="aurora-icon">
-                            <i class="bi bi-people"></i>
-                        </div>
+                    <div class="aurora-card">
+                        <div class="aurora-icon"><i class="bi bi-people"></i></div>
                         <h4>Servicio Premium</h4>
-                        <p class="text-muted">Atención personalizada las 24 horas con tripulación altamente capacitada.</p>
+                        <p>Atención personalizada las 24 horas con tripulación altamente capacitada.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Contenido principal -->
-    <div class="container">
-        <div class="content-section">
-            {% block content %}
-            <!-- Contenido específico de cada página -->
-            {% endblock %}
-        </div>
-    </div>
+    <!-- Contenedor principal para contenido variable -->
+    <main class="container my-4">
+        {% block content %}
+        <!-- Aquí irá el contenido específico de cada página -->
+        {% endblock %}
+    </main>
 
-    <!-- Footer mejorado -->
+    <!-- Footer fijo -->
     <footer class="footer-aurora">
-        <p>
-            <i class="bi bi-telephone"></i>
-            Emergencias: +54 9 11 0000-0000
-        </p>
-        <p>
-            <i class="bi bi-headset"></i>
-            Soporte: soporte@Aurora.com
-        </p>
-        <p>
-            <i class="bi bi-c-circle"></i>
-            Aurora Aerolíneas - Desde 2023
-        </p>
+        <p><i class="bi bi-telephone"></i> Emergencias: +54 9 11 0000-0000</p>
+        <p><i class="bi bi-headset"></i> Soporte: soporte@aurora.com</p>
+        <p><i class="bi bi-c-circle"></i> Aurora Aerolíneas - Desde 2023</p>
     </footer>
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Scripts personalizados -->
     <script>
-        // Carrusel con control mejorado
+        // Inicializar carrusel bootstrap con opciones
         const carouselElement = document.querySelector('#navCarousel');
         const carousel = new bootstrap.Carousel(carouselElement, {
             interval: 4000,
@@ -557,74 +344,8 @@
             pause: 'hover',
             wrap: true
         });
-
-        // Animaciones al hacer scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in-up');
-                }
-            });
-        }, observerOptions);
-
-        // Aplicar animaciones a las cards
-        document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.aurora-card');
-            cards.forEach(card => {
-                observer.observe(card);
-            });
-
-            // Smooth scroll para enlaces internos
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-        });
-
-        // Efecto parallax sutil en el carrusel
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const carousel = document.querySelector('#navCarousel');
-            if (carousel) {
-                carousel.style.transform = `translateY(${scrolled * 0.5}px)`;
-            }
-        });
     </script>
 
-    {% block extra_js %}
-    <!-- JavaScript adicional específico de cada página -->
-    {% endblock %}
-=======
-    <!-- Contenedor de contenido dinámico -->
-    <div class="container">
-        {% block content %}
-        {# Aquí se insertará el contenido específico de cada página hija #}
-        {% endblock %}
-    </div>
-
-    <!-- Bootstrap JS para funcionalidad del carrusel y componentes dinámicos -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Pie de página con información de contacto -->
-    <footer class="footer-aurora">
-        <p>📞 Emergencias: +54 9 11 0000-0000</p>
-        <p>🛠 Soporte: soporte@Aurora.com</p>
-        <p>© Aurora Aerolíneas - Desde 2023</p>
-    </footer>
-
->>>>>>> 89a7c37a94a40b47714e5a734e7c5773470c10eb
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
