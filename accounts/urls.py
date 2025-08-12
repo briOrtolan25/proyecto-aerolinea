@@ -1,25 +1,34 @@
-# aerolinea/urls.py
-from django.urls import path
+
+# En tu archivo urls.py principal (aerolinea/urls.py)
+from django.contrib import admin
+from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from gestion import views
 
 urlpatterns = [
-    # Públicas
-    path('', views.InicioView.as_view(), name='inicio'),
-    path('vuelos/', views.ListaVuelosView.as_view(), name='lista_vuelos'),
-    path('vuelos/<int:pk>/', views.DetalleVueloView.as_view(), name='detalle_vuelo'),
+    path('admin/', admin.site.urls),
     
-    # Autenticación
-    path('registro/', views.registro_view, name='registro'),
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
+    # Página principal
+    path('', views.panel_resumen, name='panel_resumen'),  # o la vista que uses
+   path('', views.home_view, name='home'), 
+    # Otras páginas principales
+    path('reservar/', views.reservar_asiento, name='reservar_asiento'),
+    path('reportes/', views.reporte_pasajeros, name='reporte_pasajeros'),
     
-    # Usuario autenticado
-    path('reservas/', views.ListaReservasView.as_view(), name='lista_reservas'),
-    path('reservas/<int:vuelo_id>/crear/', views.CrearReservaView.as_view(), name='crear_reserva'),
-    path('reservas/<int:pk>/', views.DetalleReservaView.as_view(), name='detalle_reserva'),
-    path('perfil/', views.perfil_view, name='perfil'),
+    # URLs de autenticación con redirección explícita
+    p path('admin/', admin.site.urls),
+
+    path('', views.panel_resumen, name='panel_resumen'),
+
+    path('accounts/login/', auth_views.LoginView.as_view(
+        template_name='registration/login.html',
+        redirect_authenticated_user=True
+    ), name='login'),
+
+    path('accounts/logout/', auth_views.LogoutView.as_view(
+        next_page='login'
+    ), name='logout'),
+
+    path('accounts/', include('django.contrib.auth.urls')),
     
-    # Staff
-    path('gestion/reservas/', views.GestionReservasView.as_view(), name='gestion_reservas'),
 ]

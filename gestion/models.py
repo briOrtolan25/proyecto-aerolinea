@@ -1,11 +1,36 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 import random
 import string
 from django.core.validators import MinValueValidator, RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+
+
+# --------------------
+# USUARIO (hereda AbstractUser)
+# --------------------
+class Usuario(AbstractUser):
+    class Rol(models.TextChoices):
+        ADMIN = 'AD', _('Administrador')
+        EMPLEADO = 'EM', _('Empleado')
+        PASAJERO = 'PA', _('Pasajero')
+
+    documento = models.CharField(
+        max_length=20,
+        unique=True,
+        validators=[RegexValidator(r'^[0-9]+$', 'Solo se permiten números')]
+    )
+    telefono = models.CharField(
+        max_length=20,
+        validators=[RegexValidator(r'^\+?[0-9]+$', 'Formato de teléfono inválido')]
+    )
+    fecha_nacimiento = models.DateField(null=True, blank=True)
+    rol = models.CharField(max_length=2, choices=Rol.choices, default=Rol.PASAJERO)
+
+    def __str__(self):
+        return f"{self.get_full_name()} ({self.documento})"
 
 
 # --------------------
@@ -20,44 +45,6 @@ class Pasajero(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
-
-
-# --------------------
-# USUARIO
-# --------------------
-class Usuario(AbstractUser):
-    class Rol(models.TextChoices):
-        ADMIN = 'AD', _('Administrador')
-        EMPLEADO = 'EM', _('Empleado')
-        PASAJERO = 'PA', _('Pasajero')
-    
-    documento = models.CharField(
-        max_length=20,
-        unique=True,
-        validators=[RegexValidator(r'^[0-9]+$', 'Solo se permiten números')]
-    )
-    telefono = models.CharField(
-        max_length=20,
-        validators=[RegexValidator(r'^\+?[0-9]+$', 'Formato de teléfono inválido')]
-    )
-    fecha_nacimiento = models.DateField(null=True, blank=True)
-    rol = models.CharField(max_length=2, choices=Rol.choices, default=Rol.PASAJERO)
-
-    groups = models.ManyToManyField(
-        Group,
-        related_name='gestion_usuarios',
-        blank=True,
-        verbose_name=_('groups'),
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name='gestion_usuarios_permissions',
-        blank=True,
-        verbose_name=_('user permissions'),
-    )
-
-    def __str__(self):
-        return f"{self.get_full_name()} ({self.documento})"
 
 
 # --------------------
@@ -113,8 +100,9 @@ class Vuelo(models.Model):
         return f"{self.codigo_vuelo}: {self.origen} → {self.destino}"
 
     def clean(self):
-        if self.fecha_llegada <= self.fecha_salida:
-            raise ValidationError("La fecha de llegada debe ser posterior a la de salida")
+        if self.fecha_salida is not None and self.fecha_llegada is not None:
+            if self.fecha_llegada <= self.fecha_salida:
+                raise ValidationError("La fecha de llegada debe ser posterior a la fecha de salida.")
 
 
 # --------------------
@@ -162,7 +150,12 @@ class Reserva(models.Model):
         CHECKIN = 'checkin', _('Check-In Realizado')
 
     vuelo = models.ForeignKey(Vuelo, on_delete=models.PROTECT, related_name='reservas')
-    pasajero = models.ForeignKey(Usuario, on_delete=models.PROTECT, limit_choices_to={'rol': 'PA'}, related_name='reservas')
+    pasajero = models.ForeignKey(
+        Usuario,
+        on_delete=models.PROTECT,
+        limit_choices_to={'rol': Usuario.Rol.PASAJERO},
+        related_name='reservas'
+    )
     asiento = models.OneToOneField(Asiento, on_delete=models.PROTECT, related_name='reserva')
     estado = models.CharField(max_length=20, choices=Estado.choices, default=Estado.PENDIENTE)
     fecha_reserva = models.DateTimeField(auto_now_add=True)
@@ -181,7 +174,7 @@ class Reserva(models.Model):
         ordering = ['-fecha_reserva']
 
     def __str__(self):
-        return f"Reserva {self.codigo_reserva} - {self.pasajero}"
+        return f"Reserva {self.codigo_reserva} - {self.pasajero.get_full_name()}"
 
     def save(self, *args, **kwargs):
         if not self.codigo_reserva:

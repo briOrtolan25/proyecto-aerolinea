@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/brisa/Aerolineas/proyecto-aerolinea/aerolinea/venv"
+set -gx VIRTUAL_ENV "/home/brisa/proyecto-aerolinea/aerolinea/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

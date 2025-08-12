@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio - Aurora Airlines{% endblock %}
+
+{% block content %}
+<!-- Mensajes de Django (login/logout exitoso) -->
+{% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {% if message.tags == 'success' %}
+                    <i class="bi bi-check-circle me-2"></i>
+                {% elif message.tags == 'error' %}
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                {% else %}
+                    <i class="bi bi-info-circle me-2"></i>
+                {% endif %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Contenido adicional para la página de inicio -->
+<section class="py-5">
+    <div class="container text-center">
+        {% if user.is_authenticated %}
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-8">
+                    <div class="aurora-card">
+                        <div class="aurora-icon mx-auto">
+                            <i class="bi bi-person-check-fill"></i>
+                        </div>
+                        <h3>¡Bienvenido, {{ user.first_name|default:user.username }}!</h3>
+                        <p class="text-muted mb-4">¿Qué te gustaría hacer hoy?</p>
+                        
+                        <div class="d-flex flex-wrap justify-content-center gap-3">
+                            <a href="/reservar/" class="btn btn-aurora-primary">
+                                <i class="bi bi-calendar-plus me-2"></i>
+                                Nueva Reserva
+                            </a>
+                            <a href="#" class="btn btn-outline-primary">
+                                <i class="bi bi-ticket me-2"></i>
+                                Mis Reservas
+                            </a>
+                            <a href="/reportes/" class="btn btn-outline-secondary">
+                                <i class="bi bi-graph-up me-2"></i>
+                                Ver Reportes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <!-- Destinos populares -->
+        <div class="row g-4 mb-5">
+            <div class="col-12">
+                <h2 style="background: linear-gradient(135deg, #2563eb, #9333ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Destinos Populares
+                </h2>
+                <p class="lead text-muted">Descubre los lugares más solicitados</p>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="aurora-card">
+                    <div class="aurora-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h4>Buenos Aires</h4>
+                    <p class="text-muted">La capital que nunca duerme</p>
+                    <div class="badge bg-primary">Desde $25,000</div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="aurora-card">
+                    <div class="aurora-icon">
+                        <i class="bi bi-mountain"></i>
+                    </div>
+                    <h4>Mendoza</h4>
+                    <p class="text-muted">Tierra de vinos y montañas</p>
+                    <div class="badge bg-primary">Desde $18,000</div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="aurora-card">
+                    <div class="aurora-icon">
+                        <i class="bi bi-water"></i>
+                    </div>
+                    <h4>Bariloche</h4>
+                    <p class="text-muted">Naturaleza y aventura</p>
+                    <div class="badge bg-primary">Desde $22,000</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Estilos adicionales para la página de inicio */
+.alert {
+    border-radius: 15px;
+    border: none;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #065f46;
+}
+
+.alert-error {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #991b1b;
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}
+</style>
+{% endblock %}

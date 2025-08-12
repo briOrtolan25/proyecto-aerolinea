@@ -1,673 +1,189 @@
-{% extends 'gestion/base.html' %}
-
-{% block title %}Iniciar Sesión - Aurora Airlines{% endblock %}
-
-{% block content %}
-<div class="login-container">
-    <!-- Header de la página -->
-    <div class="login-header text-center mb-5">
-        <div class="d-inline-block p-3 rounded-circle bg-gradient mb-3" style="background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));">
-            <i class="bi bi-person-circle text-white" style="font-size: 2rem;"></i>
-        </div>
-        <h1 class="display-4 gradient-text mb-3">Iniciar Sesión</h1>
-        <p class="lead text-muted">Accede a tu cuenta Aurora Airlines</p>
-        <div class="divider mx-auto"></div>
-    </div>
-
-    <div class="row justify-content-center">
-        <div class="col-lg-5 col-md-7">
-            <!-- Formulario de login -->
-            <div class="login-card">
-                <div class="card-header-custom">
-                    <h3 class="mb-0 text-center">
-                        <i class="bi bi-shield-lock"></i>
-                        Acceso Seguro
-                    </h3>
-                    <p class="mb-0 opacity-75 text-center">Ingresa tus credenciales para continuar</p>
-                </div>
-                
-                <div class="card-body p-4">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                <i class="bi bi-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-
-                    <form method="post" class="login-form">
-                        {% csrf_token %}
-                        
-                        <div class="form-group mb-4">
-                            <label for="username" class="form-label">
-                                <i class="bi bi-person text-primary"></i>
-                                Usuario
-                                <span class="required">*</span>
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-person"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control form-control-lg" 
-                                       id="username" 
-                                       name="username" 
-                                       placeholder="Ingresa tu usuario"
-                                       required
-                                       autocomplete="username">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group mb-4">
-                            <label for="password" class="form-label">
-                                <i class="bi bi-lock text-primary"></i>
-                                Contraseña
-                                <span class="required">*</span>
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-lock"></i>
-                                </span>
-                                <input type="password" 
-                                       class="form-control form-control-lg" 
-                                       id="password" 
-                                       name="password" 
-                                       placeholder="Ingresa tu contraseña"
-                                       required
-                                       autocomplete="current-password">
-                                <button class="btn btn-outline-secondary" 
-                                        type="button" 
-                                        onclick="togglePassword()"
-                                        id="togglePasswordBtn">
-                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="remember_me" name="remember_me">
-                            <label class="form-check-label" for="remember_me">
-                                Recordar mi sesión
-                            </label>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-aurora-primary btn-lg w-100 mb-3" id="loginBtn">
-                            <i class="bi bi-box-arrow-in-right"></i>
-                            <span class="btn-text">Iniciar Sesión</span>
-                            <span class="btn-loading" style="display: none;">
-                                <span class="spinner-border spinner-border-sm me-2"></span>
-                                Iniciando...
-                            </span>
-                        </button>
-                        
-                        <div class="text-center">
-                            <a href="#" class="forgot-password-link">
-                                <i class="bi bi-question-circle"></i>
-                                ¿Olvidaste tu contraseña?
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Información adicional -->
-            <div class="login-info mt-4">
-                <div class="info-card">
-                    <div class="info-header">
-                        <i class="bi bi-info-circle text-primary"></i>
-                        <h5>¿No tienes cuenta?</h5>
-                    </div>
-                    <p class="mb-3">Contacta con nuestro equipo de soporte para crear tu cuenta de acceso al sistema.</p>
-                    <div class="contact-options">
-                        <a href="tel:+5491100000000" class="contact-btn">
-                            <i class="bi bi-telephone"></i>
-                            +54 9 11 0000-0000
-                        </a>
-                        <a href="mailto:soporte@aurora-airlines.com" class="contact-btn">
-                            <i class="bi bi-envelope"></i>
-                            soporte@aurora-airlines.com
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Características del sistema -->
-            <div class="system-features mt-4">
-                <div class="features-card">
-                    <h5 class="text-center mb-4">
-                        <i class="bi bi-shield-check text-success"></i>
-                        Sistema Seguro
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="feature-item">
-                                <i class="bi bi-lock-fill"></i>
-                                <span>Encriptación SSL</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="feature-item">
-                                <i class="bi bi-shield-fill-check"></i>
-                                <span>Datos Protegidos</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="feature-item">
-                                <i class="bi bi-clock-fill"></i>
-                                <span>Acceso 24/7</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="feature-item">
-                                <i class="bi bi-cloud-check-fill"></i>
-                                <span>Respaldo en la Nube</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Aurora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
-        <!-- Panel lateral con información -->
-        <div class="col-lg-4 col-md-5 d-none d-md-block">
-            <div class="login-sidebar">
-                <div class="welcome-section">
-                    <div class="welcome-icon">
-                        <i class="bi bi-airplane"></i>
-                    </div>
-                    <h3>Bienvenido a Aurora Airlines</h3>
-                    <p>Accede a nuestro sistema de gestión para:</p>
-                    
-                    <div class="benefits-list">
-                        <div class="benefit-item">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Reservar vuelos en tiempo real</span>
-                        </div>
-                        <div class="benefit-item">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Generar reportes detallados</span>
-                        </div>
-                        <div class="benefit-item">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Gestionar pasajeros y asientos</span>
-                        </div>
-                        <div class="benefit-item">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Acceder al panel de control</span>
-                        </div>
-                        <div class="benefit-item">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <span>Exportar documentos PDF</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="stats-section">
-                    <h5>Estadísticas del Sistema</h5>
-                    <div class="stat-item">
-                        <div class="stat-number">1,247</div>
-                        <div class="stat-label">Pasajeros Atendidos</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">156</div>
-                        <div class="stat-label">Vuelos Programados</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">24</div>
-                        <div class="stat-label">Destinos Disponibles</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-    .login-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem 15px;
-        min-height: calc(100vh - 160px);
-    }
-
-    .login-header {
-        position: relative;
-        padding: 2rem 0;
-    }
-
-    .divider {
-        width: 100px;
-        height: 4px;
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-        border-radius: 2px;
-        margin-top: 1rem;
-    }
-
-    .bg-gradient {
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary)) !important;
-    }
-
-    /* Card de login */
-    .login-card {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 25px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-        overflow: hidden;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(37, 99, 235, 0.1);
-    }
-
-    .card-header-custom {
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-        color: white;
-        padding: 2rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .card-header-custom::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-        animation: float 20s linear infinite;
-    }
-
-    .card-header-custom h3,
-    .card-header-custom p {
-        position: relative;
-        z-index: 2;
-    }
-
-    /* Formulario */
-    .login-form .form-label {
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .required {
-        color: #ef4444;
-        font-weight: bold;
-    }
-
-    .input-group-text {
-        background: rgba(37, 99, 235, 0.05);
-        border-color: #e5e7eb;
-        color: var(--aurora-primary);
-    }
-
-    .form-control {
-        border: 2px solid #e5e7eb;
-        border-radius: 10px;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.9);
-    }
-
-    .form-control:focus {
-        border-color: var(--aurora-primary);
-        box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
-        background: white;
-    }
-
-    .form-control-lg {
-        padding: 1rem 1.25rem;
-        font-size: 1.1rem;
-    }
-
-    .input-group .form-control {
-        border-radius: 0 10px 10px 0;
-    }
-
-    .input-group .input-group-text {
-        border-radius: 10px 0 0 10px;
-    }
-
-    .form-check-input:checked {
-        background-color: var(--aurora-primary);
-        border-color: var(--aurora-primary);
-    }
-
-    .form-check-label {
-        color: #6b7280;
-        font-weight: 500;
-    }
-
-    /* Botones */
-    .btn-aurora-primary {
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-        border: none;
-        color: white;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-aurora-primary:hover {
-        background: linear-gradient(135deg, #1d4ed8, #7c3aed);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
-        color: white;
-    }
-
-    .btn-aurora-primary:active {
-        transform: translateY(0);
-    }
-
-    .forgot-password-link {
-        color: var(--aurora-primary);
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-    .forgot-password-link:hover {
-        color: var(--aurora-secondary);
-        text-decoration: underline;
-    }
-
-    /* Información adicional */
-    .login-info .info-card {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        border-left: 4px solid var(--aurora-primary);
-    }
-
-    .info-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .info-header h5 {
-        margin: 0;
-        color: #1f2937;
-        font-weight: bold;
-    }
-
-    .contact-options {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .contact-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--aurora-primary);
-        text-decoration: none;
-        font-weight: 500;
-        padding: 0.5rem;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-    .contact-btn:hover {
-        background: rgba(37, 99, 235, 0.05);
-        color: var(--aurora-secondary);
-        text-decoration: none;
-    }
-
-    /* Características del sistema */
-    .features-card {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(37, 99, 235, 0.1);
-    }
-
-    .feature-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        background: rgba(37, 99, 235, 0.02);
-        border-radius: 8px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #374151;
-    }
-
-    .feature-item i {
-        color: var(--aurora-primary);
-    }
-
-    /* Sidebar */
-    .login-sidebar {
-        padding-left: 2rem;
-    }
-
-    .welcome-section {
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(147, 51, 234, 0.05));
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-
-    .welcome-icon {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 2rem;
-        margin: 0 auto 1.5rem;
-    }
-
-    .welcome-section h3 {
-        color: #1f2937;
-        font-weight: bold;
-        margin-bottom: 1rem;
-    }
-
-    .welcome-section p {
-        color: #6b7280;
-        margin-bottom: 1.5rem;
-    }
-
-    .benefits-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        text-align: left;
-    }
-
-    .benefit-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        color: #374151;
-        font-weight: 500;
-    }
-
-    .benefit-item i {
-        color: #10b981;
-        font-size: 1.1rem;
-    }
-
-    /* Estadísticas */
-    .stats-section {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    }
-
-    .stats-section h5 {
-        color: #1f2937;
-        font-weight: bold;
-        margin-bottom: 1.5rem;
-        text-align: center;
-    }
-
-    .stat-item {
-        text-align: center;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        background: rgba(37, 99, 235, 0.02);
-        border-radius: 10px;
-    }
-
-    .stat-number {
-        font-size: 2rem;
-        font-weight: bold;
-        color: var(--aurora-primary);
-        margin-bottom: 0.25rem;
-    }
-
-    .stat-label {
-        font-size: 0.875rem;
-        color: #6b7280;
-        font-weight: 500;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
         .login-container {
-            padding: 1rem 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
         }
-
-        .login-header h1 {
-            font-size: 2rem;
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
         }
-
-        .card-header-custom {
-            padding: 1.5rem;
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
         }
-
-        .contact-options {
-            flex-direction: column;
+        
+        .login-header h2 {
+            color: #1a202c;
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 8px;
         }
-
-        .benefits-list {
-            gap: 0.75rem;
+        
+        .login-header p {
+            color: #718096;
+            font-size: 16px;
+            margin: 0;
         }
-
-        .stat-item {
-            margin-bottom: 0.75rem;
+        
+        .form-floating {
+            margin-bottom: 20px;
         }
-    }
-
-    /* Animaciones */
-    @keyframes float {
-        0% { transform: translateX(0) translateY(0); }
-        100% { transform: translateX(-50px) translateY(-50px); }
-    }
-
-    .login-card {
-        animation: slideUp 0.6s ease-out;
-    }
-
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
+        
+        .form-floating > .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
         }
-        to {
-            opacity: 1;
+        
+        .form-floating > .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+        
+        .form-floating > label {
+            color: #718096;
+            font-weight: 500;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-weight: 600;
+            font-size: 16px;
+            width: 100%;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+        
+        .btn-login:active {
             transform: translateY(0);
         }
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const loginForm = document.querySelector('.login-form');
-        const loginBtn = document.getElementById('loginBtn');
-        const btnText = loginBtn.querySelector('.btn-text');
-        const btnLoading = loginBtn.querySelector('.btn-loading');
-
-        // Manejo del envío del formulario
-        loginForm.addEventListener('submit', function(e) {
-            btnText.style.display = 'none';
-            btnLoading.style.display = 'inline-flex';
-            loginBtn.disabled = true;
-        });
-
-        // Auto-hide alerts
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-            setTimeout(() => {
-                if (alert.parentNode) {
-                    alert.classList.remove('show');
-                    setTimeout(() => alert.remove(), 150);
-                }
-            }, 5000);
-        });
-
-        // Focus en el primer input
-        const firstInput = document.getElementById('username');
-        if (firstInput) {
-            firstInput.focus();
-        }
-
-        // Animación de entrada para las cards
-        const cards = document.querySelectorAll('.info-card, .features-card, .welcome-section, .stats-section');
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                card.style.transition = 'all 0.6s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, (index + 1) * 200);
-        });
-    });
-
-    // Función para mostrar/ocultar contraseña
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const toggleIcon = document.getElementById('togglePasswordIcon');
         
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.className = 'bi bi-eye-slash';
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.className = 'bi bi-eye';
+        .form-text {
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 5px;
         }
-    }
-
-    // Validación en tiempo real
-    document.getElementById('username').addEventListener('input', function() {
-        if (this.value.length > 0) {
-            this.classList.add('is-valid');
-            this.classList.remove('is-invalid');
-        } else {
-            this.classList.remove('is-valid');
-            this.classList.add('is-invalid');
+        
+        .alert {
+            border-radius: 12px;
+            border: none;
+            margin-bottom: 24px;
         }
-    });
-
-    document.getElementById('password').addEventListener('input', function() {
-        if (this.value.length >= 6) {
-            this.classList.add('is-valid');
-            this.classList.remove('is-invalid');
-        } else {
-            this.classList.remove('is-valid');
-            this.classList.add('is-invalid');
+        
+        .alert-danger {
+            background: rgba(254, 226, 226, 0.8);
+            color: #c53030;
         }
-    });
-</script>
-{% endblock %}
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .login-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h2><i class="fas fa-plane text-primary me-2"></i>Aurora</h2>
+            <p>Bienvenido de vuelta</p>
+        </div>
+        
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Por favor, corrige los errores a continuación.
+            </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-floating">
+                    {{ field }}
+                    <label for="{{ field.id_for_label }}">
+                        {% if field.name == 'username' %}
+                            <i class="fas fa-user me-2"></i>{{ field.label }}
+                        {% elif field.name == 'password' %}
+                            <i class="fas fa-lock me-2"></i>{{ field.label }}
+                        {% else %}
+                            {{ field.label }}
+                        {% endif %}
+                    </label>
+                    {% if field.errors %}
+                        <div class="form-text">
+                            {% for error in field.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn btn-login">
+                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+            </button>
+        </form>
+    </div>
+</body>
+</html>

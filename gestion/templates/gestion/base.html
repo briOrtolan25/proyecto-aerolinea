@@ -81,6 +81,83 @@
             width: 100%;
         }
 
+        /* User menu dropdown */
+        .user-menu {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .user-menu .dropdown-item {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 2px 8px;
+        }
+        
+        .user-menu .dropdown-item:hover {
+            background: linear-gradient(135deg, #2563eb, #9333ea);
+            color: white;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #2563eb, #9333ea);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Auth buttons */
+        .btn-auth {
+            background: linear-gradient(135deg, #2563eb, #9333ea);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-auth:hover {
+            background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-auth-outline {
+            background: transparent;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+            border-radius: 25px;
+            padding: 0.4rem 1.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-auth-outline:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
         /* Carousel images */
         .carousel-item img {
             height: 400px;
@@ -211,6 +288,15 @@
             .aurora-logo {
                 font-size: 1.2rem;
             }
+            .auth-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+            .btn-auth, .btn-auth-outline {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -218,25 +304,104 @@
 <body>
     <!-- Header con navbar -->
     <header class="aurora-header">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a class="aurora-logo" href="{% url 'vuelos_disponibles' %}">
-                <div class="aurora-logo-icon"><i class="bi bi-airplane"></i></div>
-                Aurora Airlines
-            </a>
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a class="aurora-logo" href="{% url 'vuelos_disponibles' %}">
+                    <div class="aurora-logo-icon"><i class="bi bi-airplane"></i></div>
+                    Aurora Airlines
+                </a>
 
-            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <nav class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto gap-3">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'vuelos_disponibles' %}"><i class="bi bi-house"></i> Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'reservar_asiento' %}"><i class="bi bi-calendar-check"></i> Reservas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'reporte_pasajeros' %}"><i class="bi bi-graph-up"></i> Reportes</a></li>
-                </ul>
-            </nav>
+                <div class="d-flex align-items-center">
+                    <!-- Navegación principal -->
+                    <nav class="collapse navbar-collapse me-3" id="navbarNav">
+                        <ul class="navbar-nav gap-3">
+                            <li class="nav-item"><a class="nav-link" href="{% url 'vuelos_disponibles' %}"><i class="bi bi-house"></i> Inicio</a></li>
+                            
+                            {% if user.is_authenticated %}
+                                <li class="nav-item"><a class="nav-link" href="{% url 'reservar_asiento' %}"><i class="bi bi-calendar-check"></i> Reservas</a></li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" onclick="showLoginAlert()">
+                                        <i class="bi bi-calendar-check"></i> Reservas
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="nav-item"><a class="nav-link" href="{% url 'reporte_pasajeros' %}"><i class="bi bi-graph-up"></i> Reportes</a></li>
+                        </ul>
+                    </nav>
+
+                    <!-- Área de autenticación -->
+                    <div class="auth-section">
+                        {% if user.is_authenticated %}
+                            <!-- Usuario logueado -->
+                            <div class="dropdown">
+                                <button class="btn d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                                    <div class="user-avatar">
+                                        {{ user.first_name|default:user.username|slice:":1"|upper }}
+                                    </div>
+                                    <span class="d-none d-md-inline">{{ user.first_name|default:user.username }}</span>
+                                    <i class="bi bi-chevron-down"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end user-menu">
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-ticket me-2"></i>Mis Reservas</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        {% else %}
+                            <!-- Usuario no logueado -->
+                            <div class="auth-buttons d-flex gap-2">
+                                <a href="{% url 'login' %}" class="btn-auth-outline">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    Iniciar Sesión
+                                </a>
+                                <a href="#" onclick="alert('Función de registro en desarrollo')" class="btn-auth">
+                                    <i class="bi bi-person-plus"></i>
+                                    Registrarse
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
+
+    <!-- Alert para usuarios no logueados -->
+    <div class="modal fade" id="loginAlertModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; border: none;">
+                <div class="modal-header" style="border: none; background: linear-gradient(135deg, #2563eb, #9333ea); color: white; border-radius: 20px 20px 0 0;">
+                    <h5 class="modal-title"><i class="bi bi-shield-lock me-2"></i>Acceso Requerido</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <div class="aurora-icon mx-auto mb-3">
+                        <i class="bi bi-person-lock"></i>
+                    </div>
+                    <h6>¡Inicia sesión para reservar vuelos!</h6>
+                    <p class="text-muted">Necesitas una cuenta para acceder a nuestro sistema de reservas.</p>
+                </div>
+                <div class="modal-footer" style="border: none; justify-content: center; gap: 1rem;">
+                    <a href="{% url 'login' %}" class="btn-auth">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Iniciar Sesión
+                    </a>
+                    <a href="#" onclick="alert('Función de registro en desarrollo')" class="btn-auth-outline">
+                        <i class="bi bi-person-plus"></i>
+                        Crear Cuenta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Carrusel principal -->
     <div id="navCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000" data-bs-pause="hover">
@@ -250,7 +415,7 @@
             <div class="carousel-item active">
                 <img src="{% static '1.png' %}" class="d-block w-100" alt="Vuelos Disponibles" />
                 <div class="carousel-caption">
-                    <h5>✈️ Descubre el Mundo</h5>
+                    <h5>️ Descubre el Mundo</h5>
                     <p>Conectamos más de 150 destinos con el mejor servicio y precios competitivos</p>
                     <a href="{% url 'vuelos_disponibles' %}" class="btn btn-aurora-primary"><i class="bi bi-search"></i> Ver Vuelos</a>
                     <a href="#servicios" class="btn btn-light ms-2"><i class="bi bi-info-circle"></i> Conoce Más</a>
@@ -259,16 +424,20 @@
             <div class="carousel-item">
                 <img src="{% static 'home.png' %}" class="d-block w-100" alt="Reservar" />
                 <div class="carousel-caption">
-                    <h5>🎫 Reserva Fácil y Rápida</h5>
+                    <h5> Reserva Fácil y Rápida</h5>
                     <p>Sistema de reservas intuitivo con confirmación inmediata y mejores tarifas</p>
-                    <a href="{% url 'reservar_asiento' %}" class="btn btn-custom"><i class="bi bi-calendar-plus"></i> Reservar Ahora</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'reservar_asiento' %}" class="btn btn-custom"><i class="bi bi-calendar-plus"></i> Reservar Ahora</a>
+                    {% else %}
+                        <a href="#" onclick="showLoginAlert()" class="btn btn-custom"><i class="bi bi-calendar-plus"></i> Reservar Ahora</a>
+                    {% endif %}
                     <a href="#destinos" class="btn btn-light ms-2"><i class="bi bi-geo-alt"></i> Ver Destinos</a>
                 </div>
             </div>
             <div class="carousel-item">
                 <img src="{% static 'reportes.png' %}" class="d-block w-100" alt="Reportes" />
                 <div class="carousel-caption">
-                    <h5>📊 Gestión Inteligente</h5>
+                    <h5>Gestión Inteligente</h5>
                     <p>Reportes detallados y estadísticas en tiempo real para mejor control</p>
                     <a href="{% url 'reporte_pasajeros' %}" class="btn btn-aurora-primary"><i class="bi bi-bar-chart"></i> Ver Reportes</a>
                     <a href="#contacto" class="btn btn-light ms-2"><i class="bi bi-headset"></i> Soporte</a>
@@ -343,6 +512,25 @@
             ride: 'carousel',
             pause: 'hover',
             wrap: true
+        });
+
+        // Función para mostrar alert de login
+        function showLoginAlert() {
+            const modal = new bootstrap.Modal(document.getElementById('loginAlertModal'));
+            modal.show();
+        }
+
+        // Auto-ocultar mensajes de Django
+        document.addEventListener('DOMContentLoaded', function() {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(function(message) {
+                setTimeout(function() {
+                    message.style.opacity = '0';
+                    setTimeout(function() {
+                        message.remove();
+                    }, 300);
+                }, 5000);
+            });
         });
     </script>
 

@@ -1,10 +1,71 @@
 {% extends "gestion/base.html" %}
+{% load static %}
 
 {% block content %}
+<div class="container mt-4">
   <h2>Reservar Asiento</h2>
-  <form method="post">
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" novalidate>
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Reservar</button>
+
+    <div class="mb-3">
+      <label for="{{ form.vuelo.id_for_label }}" class="form-label">Vuelo</label>
+      {{ form.vuelo }}
+      {% for error in form.vuelo.errors %}
+        <div class="text-danger small">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.asiento.id_for_label }}" class="form-label">Asiento</label>
+      {{ form.asiento }}
+      {% for error in form.asiento.errors %}
+        <div class="text-danger small">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="mb-3 form-check">
+      {{ form.equipaje_mano }}
+      <label class="form-check-label" for="{{ form.equipaje_mano.id_for_label }}">
+        Equipaje de mano
+      </label>
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.equipaje_bodega.id_for_label }}" class="form-label">Equipaje de bodega (kg)</label>
+      {{ form.equipaje_bodega }}
+      {% for error in form.equipaje_bodega.errors %}
+        <div class="text-danger small">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.requerimientos_especiales.id_for_label }}" class="form-label">Requerimientos especiales</label>
+      {{ form.requerimientos_especiales }}
+      {% for error in form.requerimientos_especiales.errors %}
+        <div class="text-danger small">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Reservar asiento</button>
   </form>
+</div>
 {% endblock %}
+
+
