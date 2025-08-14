@@ -1,703 +1,148 @@
 {% extends 'gestion/base.html' %}
-{% load humanize %}
-{% load static %}
 
-{% block title %}Resumen General - Aurora Airlines{% endblock %}
+{% block title %}Panel de Resumen - Aurora Airlines{% endblock %}
 
 {% block content %}
-<div class="resumen-container">
-    <!-- Header de la página -->
-    <div class="page-header text-center mb-5">
-        <div class="d-inline-block p-3 rounded-circle bg-gradient mb-3" style="background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));">
-            <i class="bi bi-graph-up text-white" style="font-size: 2rem;"></i>
-        </div>
-        <h1 class="display-4 gradient-text mb-3">Resumen del Sistema</h1>
-        <p class="lead text-muted">Panel de control con estadísticas en tiempo real de Aurora Airlines</p>
-        <div class="divider mx-auto"></div>
-    </div>
-
-    <!-- Estadísticas principales -->
-    <div class="stats-grid mb-5">
-        <div class="stat-card-premium" data-aos="fade-up" data-aos-delay="100">
-            <div class="stat-header">
-                <div class="stat-icon-premium flights">
-                    <i class="bi bi-airplane"></i>
+<div class="container-fluid py-4">
+    {% if user.is_authenticated and user.is_admin %}
+        <!-- Enhanced header with gradient background and better typography -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="text-center p-4 rounded-4" style="background: linear-gradient(135deg, var(--bs-primary), var(--bs-info)); color: white;">
+                    <h2 class="display-5 fw-bold mb-2">Panel de Resumen</h2>
+                    <p class="lead mb-0 opacity-75">Dashboard administrativo de Aurora Airlines</p>
                 </div>
-                <div class="stat-trend positive">
-                    <i class="bi bi-arrow-up"></i>
-                    <span>+12%</span>
-                </div>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-number">{{ total_vuelos }}</h3>
-                <p class="stat-label">Vuelos Programados</p>
-                <div class="stat-progress">
-                    <div class="progress-bar" style="width: 85%;"></div>
-                </div>
-                <small class="stat-subtitle">Operaciones activas</small>
             </div>
         </div>
 
-        <div class="stat-card-premium" data-aos="fade-up" data-aos-delay="200">
-            <div class="stat-header">
-                <div class="stat-icon-premium reservations">
-                    <i class="bi bi-ticket-perforated"></i>
-                </div>
-                <div class="stat-trend positive">
-                    <i class="bi bi-arrow-up"></i>
-                    <span>+8%</span>
-                </div>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-number">{{ total_reservas }}</h3>
-                <p class="stat-label">Reservas Confirmadas</p>
-                <div class="stat-progress">
-                    <div class="progress-bar" style="width: 92%;"></div>
-                </div>
-                <small class="stat-subtitle">Bookings totales</small>
-            </div>
-        </div>
-
-        <div class="stat-card-premium" data-aos="fade-up" data-aos-delay="300">
-            <div class="stat-header">
-                <div class="stat-icon-premium passengers">
-                    <i class="bi bi-people"></i>
-                </div>
-                <div class="stat-trend positive">
-                    <i class="bi bi-arrow-up"></i>
-                    <span>+15%</span>
-                </div>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-number">{{ total_pasajeros }}</h3>
-                <p class="stat-label">Pasajeros Registrados</p>
-                <div class="stat-progress">
-                    <div class="progress-bar" style="width: 78%;"></div>
-                </div>
-                <small class="stat-subtitle">Clientes únicos</small>
-            </div>
-        </div>
-
-        <div class="stat-card-premium" data-aos="fade-up" data-aos-delay="400">
-            <div class="stat-header">
-                <div class="stat-icon-premium revenue">
-                    <i class="bi bi-currency-dollar"></i>
-                </div>
-                <div class="stat-trend positive">
-                    <i class="bi bi-arrow-up"></i>
-                    <span>+22%</span>
-                </div>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-number">${{ ingresos_totales|intcomma }}</h3>
-                <p class="stat-label">Ingresos Totales</p>
-                <div class="stat-progress">
-                    <div class="progress-bar" style="width: 95%;"></div>
-                </div>
-                <small class="stat-subtitle">Facturación mensual</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sección de ocupación de asientos -->
-    <div class="row mb-5">
-        <div class="col-lg-8">
-            <div class="aurora-card h-100">
-                <div class="card-header-custom">
-                    <h4 class="mb-0">
-                        <i class="bi bi-pie-chart"></i>
-                        Ocupación de Asientos
-                    </h4>
-                    <p class="mb-0 opacity-75">Distribución actual de la capacidad</p>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="occupancy-card occupied">
-                                <div class="occupancy-icon">
-                                    <i class="bi bi-person-check"></i>
-                                </div>
-                                <div class="occupancy-info">
-                                    <h3>{{ asientos_ocupados }}</h3>
-                                    <p>Asientos Ocupados</p>
-                                    <div class="occupancy-percentage">
-                                        {% widthratio asientos_ocupados asientos_ocupados|add:asientos_disponibles 100 as ocupacion_porcentaje %}
-                                        {{ ocupacion_porcentaje }}% de ocupación
-                                    </div>
-                                </div>
-                            </div>
+        <!-- Converted Bulma grid to Bootstrap with enhanced cards -->
+        <div class="row g-4">
+            <!-- Total Vuelos -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-airplane-fill text-primary" style="font-size: 2.5rem;"></i>
                         </div>
-                        <div class="col-md-6">
-                            <div class="occupancy-card available">
-                                <div class="occupancy-icon">
-                                    <i class="bi bi-person-plus"></i>
-                                </div>
-                                <div class="occupancy-info">
-                                    <h3>{{ asientos_disponibles }}</h3>
-                                    <p>Asientos Disponibles</p>
-                                    <div class="occupancy-percentage">
-                                        {% widthratio asientos_disponibles asientos_ocupados|add:asientos_disponibles 100 as disponible_porcentaje %}
-                                        {{ disponible_porcentaje }}% disponible
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <h5 class="card-title text-muted mb-2">Total Vuelos</h5>
+                        <h3 class="display-6 fw-bold text-primary mb-0">{{ total_vuelos }}</h3>
                     </div>
-                    
-                    <!-- Barra de progreso visual -->
-                    <div class="occupancy-bar mt-4">
-                        <div class="occupancy-progress">
-                            <div class="occupied-bar" style="width: {{ ocupacion_porcentaje }}%;"></div>
-                            <div class="available-bar" style="width: {{ disponible_porcentaje }}%;"></div>
+                </div>
+            </div>
+
+            <!-- Total Reservas -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-calendar-check-fill text-success" style="font-size: 2.5rem;"></i>
                         </div>
-                        <div class="occupancy-labels">
-                            <span class="occupied-label">
-                                <span class="color-indicator occupied"></span>
-                                Ocupados ({{ ocupacion_porcentaje }}%)
-                            </span>
-                            <span class="available-label">
-                                <span class="color-indicator available"></span>
-                                Disponibles ({{ disponible_porcentaje }}%)
-                            </span>
+                        <h5 class="card-title text-muted mb-2">Total Reservas</h5>
+                        <h3 class="display-6 fw-bold text-success mb-0">{{ total_reservas }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Pasajeros -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-people-fill text-info" style="font-size: 2.5rem;"></i>
                         </div>
+                        <h5 class="card-title text-muted mb-2">Total Pasajeros</h5>
+                        <h3 class="display-6 fw-bold text-info mb-0">{{ total_pasajeros }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ingresos Totales -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-currency-dollar text-warning" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h5 class="card-title text-muted mb-2">Ingresos Totales</h5>
+                        <h3 class="display-6 fw-bold text-warning mb-0">${{ ingresos_totales }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asientos Ocupados -->
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-person-fill-check text-danger" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h5 class="card-title text-muted mb-2">Asientos Ocupados</h5>
+                        <h3 class="display-6 fw-bold text-danger mb-0">{{ asientos_ocupados }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asientos Disponibles -->
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-person-fill-add text-secondary" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h5 class="card-title text-muted mb-2">Asientos Disponibles</h5>
+                        <h3 class="display-6 fw-bold text-secondary mb-0">{{ asientos_disponibles }}</h3>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="col-lg-4">
-            <div class="aurora-card h-100">
-                <div class="card-header-custom">
-                    <h4 class="mb-0">
-                        <i class="bi bi-speedometer2"></i>
-                        Métricas Clave
-                    </h4>
-                </div>
-                <div class="card-body p-4">
-                    <div class="metrics-list">
-                        <div class="metric-item">
-                            <div class="metric-icon efficiency">
-                                <i class="bi bi-lightning"></i>
-                            </div>
-                            <div class="metric-content">
-                                <h5>Eficiencia Operacional</h5>
-                                <div class="metric-value">94.5%</div>
-                                <small class="text-success">
-                                    <i class="bi bi-arrow-up"></i> +2.3% vs mes anterior
-                                </small>
-                            </div>
+
+    {% else %}
+        <!-- Enhanced access denied message with better styling -->
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-shield-exclamation text-danger" style="font-size: 4rem;"></i>
                         </div>
-                        
-                        <div class="metric-item">
-                            <div class="metric-icon satisfaction">
-                                <i class="bi bi-heart"></i>
-                            </div>
-                            <div class="metric-content">
-                                <h5>Satisfacción Cliente</h5>
-                                <div class="metric-value">4.8/5</div>
-                                <small class="text-success">
-                                    <i class="bi bi-arrow-up"></i> +0.2 vs mes anterior
-                                </small>
-                            </div>
-                        </div>
-                        
-                        <div class="metric-item">
-                            <div class="metric-icon punctuality">
-                                <i class="bi bi-clock"></i>
-                            </div>
-                            <div class="metric-content">
-                                <h5>Puntualidad</h5>
-                                <div class="metric-value">96.2%</div>
-                                <small class="text-success">
-                                    <i class="bi bi-arrow-up"></i> +1.5% vs mes anterior
-                                </small>
-                            </div>
-                        </div>
+                        <h3 class="text-danger mb-3">Acceso Restringido</h3>
+                        <p class="text-muted mb-4">Solo los administradores pueden ver el panel de resumen.</p>
+                        <a href="{% url 'vuelos' %}" class="btn btn-primary">
+                            <i class="bi bi-arrow-left me-2"></i>Volver a Vuelos
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    
+    {% endif %}
 </div>
 
 <style>
-    .resumen-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 15px;
-    }
+.hover-lift {
+    transition: all 0.3s ease;
+}
 
-    .page-header {
-        position: relative;
-        padding: 2rem 0;
-    }
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
 
-    .divider {
-        width: 100px;
-        height: 4px;
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-        border-radius: 2px;
-        margin-top: 1rem;
-    }
+.card {
+    border-radius: 1rem;
+}
 
-    .bg-gradient {
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary)) !important;
-    }
+.display-6 {
+    font-size: 2.5rem;
+}
 
-    /* Estadísticas Premium */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-        margin-bottom: 3rem;
-    }
-
-    .stat-card-premium {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(37, 99, 235, 0.1);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .stat-card-premium::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-    }
-
-    .stat-card-premium:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    }
-
-    .stat-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.5rem;
-    }
-
-    .stat-icon-premium {
-        width: 60px;
-        height: 60px;
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.5rem;
-    }
-
-    .stat-icon-premium.flights {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    }
-
-    .stat-icon-premium.reservations {
-        background: linear-gradient(135deg, #10b981, #059669);
-    }
-
-    .stat-icon-premium.passengers {
-        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    }
-
-    .stat-icon-premium.revenue {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-    }
-
-    .stat-trend {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        padding: 0.25rem 0.75rem;
-        border-radius: 50px;
-    }
-
-    .stat-trend.positive {
-        background: rgba(16, 185, 129, 0.1);
-        color: #059669;
-    }
-
-    .stat-content h3 {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: var(--aurora-primary);
-        margin-bottom: 0.5rem;
-        line-height: 1;
-    }
-
-    .stat-label {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 1rem;
-    }
-
-    .stat-progress {
-        height: 6px;
-        background: rgba(37, 99, 235, 0.1);
-        border-radius: 3px;
-        overflow: hidden;
-        margin-bottom: 0.5rem;
-    }
-
-    .progress-bar {
-        height: 100%;
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-        border-radius: 3px;
-        transition: width 1s ease;
-    }
-
-    .stat-subtitle {
-        color: #6b7280;
-        font-size: 0.875rem;
-    }
-
-    /* Ocupación de asientos */
-    .card-header-custom {
-        background: linear-gradient(135deg, var(--aurora-primary), var(--aurora-secondary));
-        color: white;
-        padding: 1.5rem;
-        border-radius: 20px 20px 0 0;
-    }
-
-    .occupancy-card {
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 15px;
-        padding: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-    }
-
-    .occupancy-card.occupied {
-        border-color: rgba(239, 68, 68, 0.2);
-        background: rgba(254, 242, 242, 0.8);
-    }
-
-    .occupancy-card.available {
-        border-color: rgba(16, 185, 129, 0.2);
-        background: rgba(236, 253, 245, 0.8);
-    }
-
-    .occupancy-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .occupancy-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        color: white;
-    }
-
-    .occupied .occupancy-icon {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
-
-    .available .occupancy-icon {
-        background: linear-gradient(135deg, #10b981, #059669);
-    }
-
-    .occupancy-info h3 {
+@media (max-width: 768px) {
+    .display-5 {
         font-size: 2rem;
-        font-weight: bold;
-        margin-bottom: 0.25rem;
-        color: var(--aurora-primary);
     }
-
-    .occupancy-info p {
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 0.5rem;
+    
+    .display-6 {
+        font-size: 2rem;
     }
-
-    .occupancy-percentage {
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-
-    .occupancy-bar {
-        margin-top: 2rem;
-    }
-
-    .occupancy-progress {
-        height: 12px;
-        background: #f3f4f6;
-        border-radius: 6px;
-        overflow: hidden;
-        display: flex;
-        margin-bottom: 1rem;
-    }
-
-    .occupied-bar {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        transition: width 1s ease;
-    }
-
-    .available-bar {
-        background: linear-gradient(135deg, #10b981, #059669);
-        transition: width 1s ease;
-    }
-
-    .occupancy-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.875rem;
-    }
-
-    .color-indicator {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-right: 0.5rem;
-    }
-
-    .color-indicator.occupied {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
-
-    .color-indicator.available {
-        background: linear-gradient(135deg, #10b981, #059669);
-    }
-
-    /* Métricas */
-    .metrics-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .metric-item {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem;
-        background: rgba(37, 99, 235, 0.05);
-        border-radius: 12px;
-        transition: all 0.3s ease;
-    }
-
-    .metric-item:hover {
-        background: rgba(37, 99, 235, 0.1);
-        transform: translateX(5px);
-    }
-
-    .metric-icon {
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.125rem;
-    }
-
-    .metric-icon.efficiency {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-    }
-
-    .metric-icon.satisfaction {
-        background: linear-gradient(135deg, #ec4899, #db2777);
-    }
-
-    .metric-icon.punctuality {
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
-    }
-
-    .metric-content h5 {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 0.25rem;
-    }
-
-    .metric-value {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--aurora-primary);
-        margin-bottom: 0.25rem;
-    }
-
-    /* Acciones rápidas */
-    .quick-actions {
-        margin-top: 3rem;
-    }
-
-    .action-card {
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 15px;
-        padding: 1.5rem;
-        text-align: center;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        color: inherit;
-        display: block;
-        border: 2px solid rgba(37, 99, 235, 0.1);
-        cursor: pointer;
-    }
-
-    .action-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        text-decoration: none;
-        color: inherit;
-        border-color: rgba(37, 99, 235, 0.3);
-    }
-
-    .action-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1rem;
-        color: white;
-        font-size: 1.5rem;
-    }
-
-    .action-icon.flights {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    }
-
-    .action-icon.reservations {
-        background: linear-gradient(135deg, #10b981, #059669);
-    }
-
-    .action-icon.reports {
-        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    }
-
-    .action-icon.refresh {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-    }
-
-    .action-card h5 {
-        font-size: 1.125rem;
-        font-weight: bold;
-        color: #374151;
-        margin-bottom: 0.5rem;
-    }
-
-    .action-card p {
-        font-size: 0.875rem;
-        color: #6b7280;
-        margin: 0;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .stats-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-
-        .occupancy-card {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .metric-item {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .occupancy-labels {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-    }
-
-    /* Animaciones */
-    @keyframes countUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .stat-number {
-        animation: countUp 0.8s ease-out;
-    }
+}
 </style>
-
-<script>
-    // Función para actualizar datos
-    function actualizarDatos() {
-        // Mostrar indicador de carga
-        const refreshIcon = document.querySelector('.action-icon.refresh i');
-        refreshIcon.style.animation = 'spin 1s linear infinite';
-        
-        // Simular actualización
-        setTimeout(() => {
-            location.reload();
-        }, 1500);
-    }
-
-    // Animación de números al cargar
-    document.addEventListener('DOMContentLoaded', function() {
-        const numbers = document.querySelectorAll('.stat-number');
-        
-        numbers.forEach(number => {
-            const finalValue = parseInt(number.textContent.replace(/[^0-9]/g, ''));
-            let currentValue = 0;
-            const increment = finalValue / 50;
-            
-            const timer = setInterval(() => {
-                currentValue += increment;
-                if (currentValue >= finalValue) {
-                    currentValue = finalValue;
-                    clearInterval(timer);
-                }
-                
-                if (number.textContent.includes('$')) {
-                    number.textContent = '$' + Math.floor(currentValue).toLocaleString();
-                } else {
-                    number.textContent = Math.floor(currentValue);
-                }
-            }, 30);
-        });
-
-        // Animación de barras de progreso
-        setTimeout(() => {
-            const progressBars = document.querySelectorAll('.progress-bar, .occupied-bar, .available-bar');
-            progressBars.forEach(bar => {
-                const width = bar.style.width;
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = width;
-                }, 100);
-            });
-        }, 500);
-    });
-
-    // Animación de rotación para el icono de actualizar
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-    `;
-    document.head.appendChild(style);
-</script>
 {% endblock %}

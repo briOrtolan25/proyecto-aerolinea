@@ -1,0 +1,146 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Vuelos - Aurora Airlines{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="text-center p-4 rounded-4 bg-gradient-primary text-white shadow-lg">
+                <h2 class="display-5 fw-bold mb-0">
+                    <i class="bi bi-airplane-engines me-3"></i>
+                    Vuelos Administrativos
+                </h2>
+                <p class="lead mb-0 opacity-90">Panel de control de vuelos</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Botón Agregar Vuelo -->
+    {% if user.is_authenticated and user.rol == 'ADMIN' %}
+    <div class="text-end mt-3 mb-4">
+        <button class="btn btn-success rounded-pill shadow-sm px-4" type="button" data-bs-toggle="collapse" data-bs-target="#formAgregarVuelo">
+            <i class="bi bi-plus-circle me-2"></i> Agregar Vuelo
+        </button>
+    </div>
+
+    <div class="collapse mb-4" id="formAgregarVuelo">
+        <div class="card card-body shadow-sm border-0 rounded-4">
+            <form method="post" action="{% url 'agregar_vuelo_admin' %}">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-2"><input type="text" name="codigo_vuelo" class="form-control" placeholder="Código" required></div>
+                    <div class="col-md-2"><input type="text" name="origen" class="form-control" placeholder="Origen" required></div>
+                    <div class="col-md-2"><input type="text" name="destino" class="form-control" placeholder="Destino" required></div>
+                    <div class="col-md-2"><input type="datetime-local" name="fecha_salida" class="form-control" required></div>
+                    <div class="col-md-2"><input type="datetime-local" name="fecha_llegada" class="form-control" required></div>
+                    <div class="col-md-2"><input type="number" name="precio_base" class="form-control" placeholder="Precio" step="0.01" required></div>
+                    <div class="col-12 text-end mt-2">
+                        <button type="submit" class="btn btn-primary rounded-pill shadow-sm">Guardar Vuelo</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tabla de vuelos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient text-white py-3">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-table me-2"></i>
+                        Lista de Vuelos
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Origen</th>
+                                    <th>Destino</th>
+                                    <th>Salida</th>
+                                    <th>Llegada</th>
+                                    <th>Precio</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vuelo in vuelos %}
+                                <tr class="{% if vuelo.estado == 'cancelado' %}bg-light text-muted{% endif %}">
+                                    <td>{{ vuelo.codigo_vuelo }}</td>
+                                    <td>{{ vuelo.origen }}</td>
+                                    <td>{{ vuelo.destino }}</td>
+                                    <td>{{ vuelo.fecha_salida|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ vuelo.fecha_llegada|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <form method="post" class="d-flex align-items-center gap-2">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="update_vuelo" value="{{ vuelo.id }}">
+                                            <input type="number" name="nuevo_precio" class="form-control form-control-sm" value="{{ vuelo.precio_base }}" step="0.01" style="width:80px;">
+                                            <button class="btn btn-sm btn-primary" type="submit">Actualizar</button>
+                                        </form>
+                                    </td>
+                                    <td>{{ vuelo.get_estado_display }}</td>
+                                    <td class="text-center">
+                                        {% if vuelo.estado != 'cancelado' %}
+                                        <!-- Botón Cancelar -->
+                                        <form method="post" action="{% url 'cancelar_vuelo' vuelo.id %}" 
+                                              onsubmit="return confirm('¿Seguro que quieres cancelar este vuelo?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-warning btn-sm">Cancelar</button>
+                                        </form>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Cancelado</span>
+                                        {% endif %}
+                                        <!-- Botón Reporte -->
+                                        <a href="{% url 'reporte_pasajeros' vuelo.id %}" class="btn btn-info btn-sm rounded-pill mt-1">
+                                            <i class="bi bi-file-earmark-text me-1"></i> Reporte
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-5">No hay vuelos disponibles</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.bg-gradient { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); }
+.table-hover tbody tr:hover { background-color: rgba(0, 123, 255, 0.05); transform: translateY(-1px); transition: all 0.2s ease; }
+.btn { transition: all 0.2s ease; }
+.btn:hover { transform: translateY(-2px); }
+.card { transition: all 0.3s ease; }
+.badge { font-size: 0.75em; padding: 0.5em 0.75em; }
+@media (max-width: 768px) { .table-responsive { font-size: 0.875rem; } .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; } .display-5 { font-size: 2rem; } }
+</style>
+{% endblock %}

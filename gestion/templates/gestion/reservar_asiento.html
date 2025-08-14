@@ -1,71 +1,471 @@
-{% extends "gestion/base.html" %}
+{% extends 'gestion/base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
-{% block content %}
-<div class="container mt-4">
-  <h2>Reservar Asiento</h2>
+{% block title %}Reservar Asiento - Aurora Airlines{% endblock %}
 
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
+{% block extra_css %}
+<style>
+    :root {
+        --aurora-primary: #2563eb;
+        --aurora-secondary: #1e40af;
+        --aurora-accent: #3b82f6;
+        --aurora-light: #eff6ff;
+        --aurora-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
 
-  <form method="post" novalidate>
-    {% csrf_token %}
+    .reservation-container {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
 
-    <div class="mb-3">
-      <label for="{{ form.vuelo.id_for_label }}" class="form-label">Vuelo</label>
-      {{ form.vuelo }}
-      {% for error in form.vuelo.errors %}
-        <div class="text-danger small">{{ error }}</div>
-      {% endfor %}
-    </div>
+    .reservation-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--shadow-medium);
+        overflow: hidden;
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+    }
 
-    <div class="mb-3">
-      <label for="{{ form.asiento.id_for_label }}" class="form-label">Asiento</label>
-      {{ form.asiento }}
-      {% for error in form.asiento.errors %}
-        <div class="text-danger small">{{ error }}</div>
-      {% endfor %}
-    </div>
+    .reservation-header {
+        background: var(--aurora-gradient);
+        color: white;
+        padding: 3rem 2rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
 
-    <div class="mb-3 form-check">
-      {{ form.equipaje_mano }}
-      <label class="form-check-label" for="{{ form.equipaje_mano.id_for_label }}">
-        Equipaje de mano
-      </label>
-    </div>
+    .reservation-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+        opacity: 0.1;
+        animation: float 20s ease-in-out infinite;
+    }
 
-    <div class="mb-3">
-      <label for="{{ form.equipaje_bodega.id_for_label }}" class="form-label">Equipaje de bodega (kg)</label>
-      {{ form.equipaje_bodega }}
-      {% for error in form.equipaje_bodega.errors %}
-        <div class="text-danger small">{{ error }}</div>
-      {% endfor %}
-    </div>
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(180deg); }
+    }
 
-    <div class="mb-3">
-      <label for="{{ form.requerimientos_especiales.id_for_label }}" class="form-label">Requerimientos especiales</label>
-      {{ form.requerimientos_especiales }}
-      {% for error in form.requerimientos_especiales.errors %}
-        <div class="text-danger small">{{ error }}</div>
-      {% endfor %}
-    </div>
+    .reservation-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
 
-    {% if form.non_field_errors %}
-      <div class="alert alert-danger">
-        <ul class="mb-0">
-          {% for error in form.non_field_errors %}
-            <li>{{ error }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
+    .reservation-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
 
-    <button type="submit" class="btn btn-primary">Reservar asiento</button>
-  </form>
-</div>
+    .plane-icon {
+        position: absolute;
+        top: 1rem;
+        right: 2rem;
+        font-size: 3rem;
+        opacity: 0.2;
+        transform: rotate(45deg);
+    }
+
+    .form-container {
+        padding: 3rem 2rem;
+    }
+
+    .form-section {
+        background: #f8fafc;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--aurora-primary);
+        transition: all 0.3s ease;
+    }
+
+    .form-section:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-soft);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--aurora-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    .section-icon {
+        margin-right: 0.75rem;
+        font-size: 1.5rem;
+        color: var(--aurora-primary);
+    }
+
+    .custom-field {
+        margin-bottom: 1.5rem;
+    }
+
+    .custom-label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .custom-input, .custom-select, .custom-textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .custom-input:focus, .custom-select:focus, .custom-textarea:focus {
+        outline: none;
+        border-color: var(--aurora-primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .custom-checkbox {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: white;
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .custom-checkbox:hover {
+        border-color: var(--aurora-primary);
+        background: var(--aurora-light);
+    }
+
+    .custom-checkbox input[type="checkbox"] {
+        margin-right: 0.75rem;
+        transform: scale(1.2);
+    }
+
+    .error-message {
+        color: #dc2626;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .warning-message {
+        color: #d97706;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        background: #fef3c7;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #f59e0b;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 3rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary {
+        background: var(--aurora-gradient);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-soft);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: var(--aurora-secondary);
+        border: 2px solid var(--aurora-primary);
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-secondary:hover {
+        background: var(--aurora-primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .availability-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        margin-top: 0.5rem;
+    }
+
+    .status-available {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-limited {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    @media (max-width: 768px) {
+        .reservation-container {
+            padding: 1rem;
+        }
+        
+        .reservation-header {
+            padding: 2rem 1rem 1.5rem;
+        }
+        
+        .reservation-title {
+            font-size: 2rem;
+        }
+        
+        .form-container {
+            padding: 2rem 1rem;
+        }
+        
+        .form-section {
+            padding: 1.5rem;
+        }
+        
+        .button-group {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+    }
+</style>
 {% endblock %}
 
+{% block content %}
+<div class="reservation-container">
+    <div class="reservation-card">
+        <div class="reservation-header">
+            <div class="plane-icon">✈️</div>
+            <h1 class="reservation-title">Reservar Asiento</h1>
+            <p class="reservation-subtitle">Complete los detalles de su reserva para volar con Aurora Airlines</p>
+        </div>
 
+        <div class="form-container">
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="form-section" style="border-left-color: #dc2626; background: #fef2f2;">
+                        {% for error in form.non_field_errors %}
+                            <div class="error-message">
+                                <span style="margin-right: 0.5rem;">⚠️</span>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Selección de vuelo -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🛫</span>
+                        Selección de Vuelo
+                    </h3>
+                    <div class="custom-field">
+                        <label class="custom-label">{{ form.vuelo.label }}</label>
+                        {{ form.vuelo|add_class:"custom-select" }}
+                        {% for error in form.vuelo.errors %}
+                            <div class="error-message">
+                                <span style="margin-right: 0.5rem;">❌</span>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Selección de asiento -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">💺</span>
+                        Selección de Asiento
+                    </h3>
+                    <div class="custom-field">
+                        <label class="custom-label">{{ form.asiento.label }}</label>
+                        {{ form.asiento|add_class:"custom-select" }}
+                        
+                        {% if form.asiento.errors %}
+                            {% for error in form.asiento.errors %}
+                                <div class="error-message">
+                                    <span style="margin-right: 0.5rem;">❌</span>
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            {% if form.asiento.queryset.count == 0 and form.vuelo.value %}
+                                <div class="warning-message">
+                                    <span style="margin-right: 0.5rem;">⚠️</span>
+                                    No hay asientos disponibles para este vuelo.
+                                </div>
+                            {% elif form.asiento.queryset.count > 0 %}
+                                <div class="availability-status status-available">
+                                    <span>✅</span>
+                                    {{ form.asiento.queryset.count }} asientos disponibles
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Equipaje -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🧳</span>
+                        Equipaje
+                    </h3>
+                    
+                    <!-- Equipaje de mano -->
+                    <div class="custom-field">
+                        <label class="custom-checkbox">
+                            {{ form.equipaje_mano }}
+                            <span>{{ form.equipaje_mano.label }}</span>
+                        </label>
+                    </div>
+
+                    <!-- Equipaje de bodega -->
+                    <div class="custom-field">
+                        <label class="custom-label">{{ form.equipaje_bodega.label }}</label>
+                        {{ form.equipaje_bodega|add_class:"custom-input" }}
+                        {% for error in form.equipaje_bodega.errors %}
+                            <div class="error-message">
+                                <span style="margin-right: 0.5rem;">❌</span>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Requerimientos especiales -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">📝</span>
+                        Requerimientos Especiales
+                    </h3>
+                    <div class="custom-field">
+                        <label class="custom-label">{{ form.requerimientos_especiales.label }}</label>
+                        {{ form.requerimientos_especiales|add_class:"custom-textarea" }}
+                        <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem; display: block;">
+                            Indique cualquier necesidad especial como asistencia médica, dieta especial, etc.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">
+                        <span>✈️</span>
+                        Confirmar Reserva
+                    </button>
+                    <a href="{% url 'vuelos_disponibles' %}" class="btn-secondary">
+                        <span>↩️</span>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Agregar interactividad suave
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de entrada para las secciones
+    const sections = document.querySelectorAll('.form-section');
+    sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            section.style.transition = 'all 0.6s ease';
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+
+    // Mejorar la experiencia del checkbox
+    const checkboxes = document.querySelectorAll('.custom-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'INPUT') {
+                const input = this.querySelector('input[type="checkbox"]');
+                input.checked = !input.checked;
+            }
+        });
+    });
+
+    // Validación visual en tiempo real
+    const inputs = document.querySelectorAll('.custom-input, .custom-select, .custom-textarea');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.value.trim() !== '') {
+                this.style.borderColor = '#10b981';
+                this.style.backgroundColor = '#f0fdf4';
+            } else {
+                this.style.borderColor = '#e5e7eb';
+                this.style.backgroundColor = 'white';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,80 +1,338 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Boleto</title>
+    <meta charset="UTF-8" />
+    <title>Boleto Electrónico - Reserva #{{ reserva.codigo_reserva }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            margin: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            color: #2c3e50;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
+        
+        .ticket-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
         .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
             text-align: center;
+            padding: 30px 20px;
+            position: relative;
         }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: white;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+        }
+        
         .logo {
-            width: 120px;
-            margin-bottom: 10px;
+            max-width: 180px;
+            margin-bottom: 15px;
+            filter: brightness(0) invert(1);
         }
-        .info {
-            margin-top: 20px;
+        
+        h1 {
+            font-size: 28px;
+            margin: 10px 0 5px 0;
+            font-weight: 300;
+            letter-spacing: 2px;
         }
-        .info table {
+        
+        h2 {
+            font-size: 18px;
+            font-weight: 400;
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .info-section {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .info-section h3 {
+            margin: 0 0 20px 0;
+            color: #1e3c72;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-section h3::before {
+            content: '';
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        
+        table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
         }
-        .info table, .info th, .info td {
-            border: 1px solid black;
-        }
-        .info th, .info td {
-            padding: 6px;
+        
+        th, td {
             text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #090a0aff;
         }
-        .qr {
+        
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 40%;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            font-size: 15px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        tr:last-child th,
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .qr-container {
             text-align: center;
-            margin-top: 20px;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: 2px dashed #667eea;
         }
-        .qr img {
-            width: 120px;
+        
+        .qr-container p {
+            font-size: 16px;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .qr-container img {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #667eea;
+            padding: 10px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 30px;
+            position: relative;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: white;
+            border-radius: 0 0 50% 50% / 0 0 100% 100%;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .footer p:first-child {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .price-highlight {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white !important;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .status-confirmed {
+            background: #28a745;
+            color: white !important;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Decorative elements */
+        .ticket-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        
+        .ticket-container::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        
+        .ticket-container {
+            position: relative;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        {% if logo_base64 %}
-            <img class="logo" src="data:image/png;base64,{{ logo_base64 }}" alt="Logo">
-        {% endif %}
-        <h2>Boleto de Reserva</h2>
-    </div>
+    <div class="ticket-container">
+        <div class="header">
+            {% if logo_base64 %}
+                <img src="data:image/png;base64,{{ logo_base64 }}" alt="Logo Aurora Airlines" class="logo" />
+            {% endif %}
+            <h1>BOLETO ELECTRÓNICO</h1>
+            <h2>Aurora Airlines - Reserva #{{ reserva.codigo_reserva }}</h2>
+        </div>
 
-    <div class="info">
-        <table>
-            <tr>
-                <th>ID Reserva</th>
-                <td>{{ reserva.id }}</td>
-            </tr>
-            <tr>
-                <th>Pasajero</th>
-                <td>{{ reserva.pasajero }}</td>
-            </tr>
-            <tr>
-                <th>Vuelo</th>
-                <td>{{ reserva.vuelo }}</td>
-            </tr>
-            <tr>
-                <th>Fecha</th>
-                <td>{{ reserva.fecha }}</td>
-            </tr>
-            <tr>
-                <th>Asiento</th>
-                <td>{{ reserva.asiento }}</td>
-            </tr>
-        </table>
-    </div>
+        <div class="content">
+            <div class="info-section">
+                <h3>Datos del Pasajero</h3>
+                <table>
+                    <tr>
+                        <th>Nombre Completo</th>
+                        <td>{{ reserva.pasajero.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Documento</th>
+                        <td>{{ reserva.pasajero.tipo_documento }} - {{ reserva.pasajero.documento }}</td>
+                    </tr>
+                    <tr>
+                        <th>Correo Electrónico</th>
+                        <td>{{ reserva.pasajero.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Teléfono</th>
+                        <td>{{ reserva.pasajero.telefono }}</td>
+                    </tr>
+                </table>
+            </div>
 
-    <div class="qr">
-        <p>Escanee para verificar su reserva</p>
-        <img src="data:image/png;base64,{{ qr_base64 }}" alt="Código QR">
+            <div class="info-section">
+                <h3>Detalles del Vuelo</h3>
+                <table>
+                    <tr>
+                        <th>Origen</th>
+                        <td>{{ reserva.vuelo.origen }}</td>
+                    </tr>
+                    <tr>
+                        <th>Destino</th>
+                        <td>{{ reserva.vuelo.destino }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha y Hora de Salida</th>
+                        <td>{{ reserva.vuelo.fecha_salida|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha y Hora de Llegada</th>
+                        <td>{{ reserva.vuelo.fecha_llegada|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Duración Estimada</th>
+                        <td>{{ reserva.vuelo.duracion }}</td>
+                    </tr>
+                    <tr>
+                        <th>Avión</th>
+                        <td>{{ reserva.vuelo.avion.modelo }}</td>
+                    </tr>
+                    <tr>
+                        <th>Precio Pagado</th>
+                        <td class="price-highlight">${{ reserva.precio|floatformat:2 }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="info-section">
+                <h3>Asiento y Reserva</h3>
+                <table>
+                    <tr>
+                        <th>Asiento</th>
+                        <td>{{ reserva.asiento.numero }} (Fila {{ reserva.asiento.fila }}, Columna {{ reserva.asiento.columna }})</td>
+                    </tr>
+                    <tr>
+                        <th>Tipo de Asiento</th>
+                        <td>{{ reserva.asiento.tipo }}</td>
+                    </tr>
+                    <tr>
+                        <th>Estado Reserva</th>
+                        <td class="status-confirmed">{{ reserva.estado }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de Reserva</th>
+                        <td>{{ reserva.fecha_reserva|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="qr-container">
+                <p>Escanee el código para validar su reserva</p>
+                <img src="data:image/png;base64,{{ qr_base64 }}" alt="Código QR reserva" />
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>¡Gracias por elegir Aurora Airlines!</p>
+            <p>Contacto: soporte@auroraairlines.com | Tel: +54 11 1234-5678</p>
+            <p>Tenga un excelente viaje y llegue seguro a su destino</p>
+        </div>
     </div>
 </body>
 </html>
+

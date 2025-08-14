@@ -1,23 +1,193 @@
-{% extends "gestion/base.html" %}
+{% extends 'gestion/base.html' %}
+{% load static %}
 
-{% block title %}
-  Boleto - {{ reserva.codigo_reserva }}
-{% endblock %}
+{% block title %}Boleto - Aurora Airlines{% endblock %}
 
 {% block content %}
-  <h1>Boleto de Reserva {{ reserva.codigo_reserva }}</h1>
-  <p><strong>Pasajero:</strong> {{ reserva.pasajero.get_full_name }}</p>
-  <p><strong>Vuelo:</strong> {{ reserva.vuelo.origen }} → {{ reserva.vuelo.destino }}</p>
-  <p><strong>Fecha de salida:</strong> {{ reserva.vuelo.fecha_salida }}</p>
-  <p><strong>Asiento:</strong> {{ reserva.asiento.numero }}</p>
-  <p><strong>Precio:</strong> ${{ reserva.precio_final }}</p>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h2 class="display-4 text-primary font-weight-bold">
+                    <i class="fas fa-ticket-alt mr-2"></i>Detalle del Boleto
+                </h2>
+                <p class="lead text-muted">Aurora Airlines</p>
+            </div>
 
-  {% if boleto %}
-    <p><strong>Código de barra del boleto:</strong> {{ boleto.codigo_barra }}</p>
-    <p><strong>Estado:</strong> {{ boleto.get_estado_display }}</p>
-  {% else %}
-    <p>No hay boleto asociado a esta reserva.</p>
-  {% endif %}
+            {% if reserva %}
+                <!-- Boleto Card -->
+                <div class="card shadow-lg border-0 mb-4">
+                    <div class="card-header bg-gradient-primary text-white text-center py-3">
+                        <h4 class="mb-0">
+                            <i class="fas fa-plane mr-2"></i>
+                            Código de Reserva: {{ reserva.codigo_reserva }}
+                        </h4>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <!-- Información del Vuelo -->
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="alert alert-info border-left-info">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h5 class="mb-1">
+                                                <i class="fas fa-route mr-2"></i>
+                                                {{ reserva.vuelo.codigo_vuelo }}
+                                            </h5>
+                                            <p class="mb-0 h6">
+                                                {{ reserva.vuelo.origen }} 
+                                                <i class="fas fa-arrow-right mx-2 text-primary"></i> 
+                                                {{ reserva.vuelo.destino }}
+                                            </p>
+                                        </div>
+                                        <div class="col-md-4 text-md-right">
+                                            <span class="badge badge-primary badge-pill p-2">
+                                                <i class="fas fa-chair mr-1"></i>
+                                                Asiento {{ reserva.asiento.numero }}
+                                            </span>
+                                            <br>
+                                            <small class="text-muted">{{ reserva.asiento.get_tipo_display }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-  <a href="{% url 'generar_pdf_boleto' reserva.id %}" class="btn btn-primary">Descargar PDF</a>
+                        <!-- Detalles de la Reserva -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-left-success h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-success mb-2">
+                                            <i class="fas fa-dollar-sign mr-2"></i>Información de Pago
+                                        </h6>
+                                        <p class="h5 text-success font-weight-bold mb-0">
+                                            ${{ reserva.precio_final }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-left-warning h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-warning mb-2">
+                                            <i class="fas fa-suitcase mr-2"></i>Equipaje
+                                        </h6>
+                                        <p class="mb-1">
+                                            <i class="fas fa-briefcase mr-1"></i>
+                                            Mano: {{ reserva.equipaje_mano|yesno:"Sí,No" }}
+                                        </p>
+                                        <p class="mb-0">
+                                            <i class="fas fa-suitcase-rolling mr-1"></i>
+                                            Bodega: {{ reserva.equipaje_bodega }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información Adicional -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-left-info h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-info mb-2">
+                                            <i class="fas fa-clipboard-list mr-2"></i>Requerimientos Especiales
+                                        </h6>
+                                        <p class="mb-0">{{ reserva.requerimientos_especiales|default:"Ninguno" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-left-secondary h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-secondary mb-2">
+                                            <i class="fas fa-info-circle mr-2"></i>Estado y Fecha
+                                        </h6>
+                                        <p class="mb-1">
+                                            <span class="badge badge-success">{{ reserva.get_estado_display }}</span>
+                                        </p>
+                                        <p class="mb-0 small text-muted">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            {{ reserva.fecha_reserva|date:"d/m/Y H:i" }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="text-center mb-4">
+                    <a href="{% url 'generar_pdf_boleto' reserva.id %}" class="btn btn-primary btn-lg mr-3">
+                        <i class="fas fa-download mr-2"></i>Descargar PDF
+                    </a>
+                    <a href="{% url 'vuelos_disponibles' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-arrow-left mr-2"></i>Volver a Vuelos
+                    </a>
+                </div>
+            {% else %}
+                <!-- Mensaje de Error -->
+                <div class="text-center">
+                    <div class="card border-0 shadow">
+                        <div class="card-body py-5">
+                            <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
+                            <h4 class="text-muted">No se encontró un boleto para esta reserva</h4>
+                            <a href="{% url 'vuelos_disponibles' %}" class="btn btn-primary mt-3">
+                                <i class="fas fa-search mr-2"></i>Buscar Vuelos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.border-left-primary {
+    border-left: 4px solid #007bff !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #28a745 !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+
+.border-left-info {
+    border-left: 4px solid #17a2b8 !important;
+}
+
+.border-left-secondary {
+    border-left: 4px solid #6c757d !important;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    color: #0d47a1;
+}
+</style>
 {% endblock %}
+
+

@@ -1,22 +1,22 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
-import random
-import string
 from django.core.validators import MinValueValidator, RegexValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-
+import random
+import string
+import uuid
 
 # --------------------
-# USUARIO (hereda AbstractUser)
+# USUARIO
 # --------------------
+
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
+from django.db import models
+
 class Usuario(AbstractUser):
-    class Rol(models.TextChoices):
-        ADMIN = 'AD', _('Administrador')
-        EMPLEADO = 'EM', _('Empleado')
-        PASAJERO = 'PA', _('Pasajero')
-
     documento = models.CharField(
         max_length=20,
         unique=True,
@@ -27,24 +27,24 @@ class Usuario(AbstractUser):
         validators=[RegexValidator(r'^\+?[0-9]+$', 'Formato de teléfono inválido')]
     )
     fecha_nacimiento = models.DateField(null=True, blank=True)
+
+    class Rol(models.TextChoices):
+        ADMIN = 'AD', 'Administrador'
+        PASAJERO = 'PA', 'Pasajero'
+
     rol = models.CharField(max_length=2, choices=Rol.choices, default=Rol.PASAJERO)
 
     def __str__(self):
-        return f"{self.get_full_name()} ({self.documento})"
+        return f"{self.get_full_name()} - {self.get_rol_display()}"
 
+    @property
+    def is_admin(self):
+        return self.rol == self.Rol.ADMIN
 
-# --------------------
-# PASAJERO
-# --------------------
-class Pasajero(models.Model):
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    tipo_documento = models.CharField(max_length=10)
-    documento = models.CharField(max_length=20, unique=True)
-    fecha_nacimiento = models.DateField()
+    @property
+    def is_pasajero(self):
+        return self.rol == self.Rol.PASAJERO
 
-    def __str__(self):
-        return f"{self.nombre} {self.apellido}"
 
 
 # --------------------
@@ -78,16 +78,34 @@ class Vuelo(models.Model):
         COMPLETADO = 'completado', _('Completado')
         EN_CURSO = 'en_curso', _('En Curso')
 
-    avion = models.ForeignKey(Avion, on_delete=models.PROTECT, related_name='vuelos')
+    avion = models.ForeignKey('Avion', on_delete=models.PROTECT, related_name='vuelos')
     codigo_vuelo = models.CharField(max_length=10, unique=True)
-    origen = models.CharField(max_length=100)
-    destino = models.CharField(max_length=100)
+    origen = models.CharField(max_length=100, db_index=True)
+    destino = models.CharField(max_length=100, db_index=True)
     fecha_salida = models.DateTimeField()
     fecha_llegada = models.DateTimeField()
     duracion = models.DurationField()
-    estado = models.CharField(max_length=20, choices=Estado.choices, default=Estado.PROGRAMADO)
-    precio_base = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
-    tripulacion = models.ManyToManyField(Usuario, limit_choices_to={'rol__in': ['AD', 'EM']}, blank=True)
+    estado = models.CharField(
+        max_length=20,
+        choices=Estado.choices,
+        default=Estado.PROGRAMADO
+    )
+    precio_base = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
+    tripulacion = models.ManyToManyField(
+        'Usuario',
+        limit_choices_to={'rol__in': ['AD', 'EM']},
+        blank=True
+    )
+
+    def clean(self):
+        # Validar que la fecha de llegada sea posterior a la de salida
+        if self.fecha_salida and self.fecha_llegada:
+            if self.fecha_llegada <= self.fecha_salida:
+                raise ValidationError("La fecha de llegada debe ser posterior a la fecha de salida.")
 
     class Meta:
         ordering = ['fecha_salida']
@@ -99,11 +117,10 @@ class Vuelo(models.Model):
     def __str__(self):
         return f"{self.codigo_vuelo}: {self.origen} → {self.destino}"
 
-    def clean(self):
-        if self.fecha_salida is not None and self.fecha_llegada is not None:
-            if self.fecha_llegada <= self.fecha_salida:
-                raise ValidationError("La fecha de llegada debe ser posterior a la fecha de salida.")
-
+    # Método helper para saber si el vuelo está cancelado
+    @property
+    def cancelado(self):
+        return self.estado == self.Estado.CANCELADO
 
 # --------------------
 # ASIENTO
@@ -191,13 +208,16 @@ class Reserva(models.Model):
         raise ValueError("No se pudo generar un código único de reserva")
 
     def calcular_precio_final(self):
-        return self.vuelo.precio_base + self.asiento.precio_extra
+        if self.asiento:
+            return self.vuelo.precio_base + self.asiento.precio_extra
+        return self.vuelo.precio_base
 
     def cancelar(self):
         self.estado = self.Estado.CANCELADA
-        self.asiento.estado = Asiento.Estado.DISPONIBLE
-        self.asiento.save()
-        self.save()
+        if self.asiento:
+            self.asiento.estado = Asiento.Estado.DISPONIBLE
+            self.asiento.save()
+        super().save()
 
 
 # --------------------
@@ -228,7 +248,7 @@ class Boleto(models.Model):
         super().save(*args, **kwargs)
 
     def generar_codigo_barra(self):
-        return f"B{self.reserva.codigo_reserva}{random.randint(1000, 9999)}"
+        return f"B{self.reserva.codigo_reserva}{uuid.uuid4().hex[:6].upper()}"
 
     def marcar_como_usado(self):
         self.estado = self.Estado.USADO

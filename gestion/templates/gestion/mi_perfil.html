@@ -1,0 +1,267 @@
+{% extends 'gestion/base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil - Aurora Airlines{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
+    <div class="container">
+        <!-- Header del Perfil -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-lg" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px;">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 text-center">
+                                <div class="position-relative d-inline-block">
+                                    <div class="rounded-circle bg-gradient d-flex align-items-center justify-content-center" 
+                                         style="width: 120px; height: 120px; background: linear-gradient(45deg, #667eea, #764ba2);">
+                                        <i class="fas fa-user text-white" style="font-size: 3rem;"></i>
+                                    </div>
+                                    <span class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2">
+                                        <i class="fas fa-check text-white"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <h1 class="display-6 fw-bold text-dark mb-2">
+                                    {{ user.first_name }} {{ user.last_name }}
+                                </h1>
+                                <p class="text-muted mb-2">
+                                    <i class="fas fa-envelope me-2"></i>{{ user.email }}
+                                </p>
+                                <p class="text-muted mb-3">
+                                    <i class="fas fa-calendar me-2"></i>Miembro desde {{ user.date_joined|date:"F Y" }}
+                                </p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-primary px-3 py-2">
+                                        <i class="fas fa-star me-1"></i>Viajero Frecuente
+                                    </span>
+                                    <span class="badge bg-success px-3 py-2">
+                                        <i class="fas fa-shield-alt me-1"></i>Cuenta Verificada
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas Rápidas -->
+        <div class="row mb-5">
+            <div class="col-md-3 mb-3">
+                <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24); border-radius: 15px;">
+                    <div class="card-body text-center text-white">
+                        <i class="fas fa-plane-departure fa-2x mb-3"></i>
+                        <h3 class="fw-bold">{{ total_vuelos|default:0 }}</h3>
+                        <p class="mb-0">Vuelos Realizados</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(45deg, #4ecdc4, #44a08d); border-radius: 15px;">
+                    <div class="card-body text-center text-white">
+                        <i class="fas fa-map-marker-alt fa-2x mb-3"></i>
+                        <h3 class="fw-bold">{{ destinos_visitados|default:0 }}</h3>
+                        <p class="mb-0">Destinos Visitados</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(45deg, #feca57, #ff9ff3); border-radius: 15px;">
+                    <div class="card-body text-center text-white">
+                        <i class="fas fa-clock fa-2x mb-3"></i>
+                        <h3 class="fw-bold">{{ horas_vuelo|default:0 }}</h3>
+                        <p class="mb-0">Horas de Vuelo</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(45deg, #a8edea, #fed6e3); border-radius: 15px;">
+                    <div class="card-body text-center text-white">
+                        <i class="fas fa-star fa-2x mb-3"></i>
+                        <h3 class="fw-bold">{{ puntos_fidelidad|default:0 }}</h3>
+                        <p class="mb-0">Puntos Aurora</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido Principal -->
+        <div class="row">
+            <!-- Información Personal -->
+            <div class="col-lg-8 mb-4">
+                <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                    <div class="card-header bg-transparent border-0 p-4">
+                        <h4 class="fw-bold mb-0">
+                            <i class="fas fa-user-edit me-2 text-primary"></i>Información Personal
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" action="{% url 'actualizar_perfil' %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Nombre</label>
+                                    <input type="text" class="form-control" name="first_name" 
+                                           value="{{ user.first_name }}" style="border-radius: 10px;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Apellido</label>
+                                    <input type="text" class="form-control" name="last_name" 
+                                           value="{{ user.last_name }}" style="border-radius: 10px;">
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label fw-semibold">Email</label>
+                                    <input type="email" class="form-control" name="email" 
+                                           value="{{ user.email }}" style="border-radius: 10px;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Teléfono</label>
+                                    <input type="tel" class="form-control" name="telefono" 
+                                           value="{{ user.profile.telefono|default:'' }}" style="border-radius: 10px;">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Fecha de Nacimiento</label>
+                                    <input type="date" class="form-control" name="fecha_nacimiento" 
+                                           value="{{ user.profile.fecha_nacimiento|date:'Y-m-d' }}" style="border-radius: 10px;">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4 py-2" style="border-radius: 10px;">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Historial de Vuelos -->
+                <div class="card border-0 shadow-sm mt-4" style="border-radius: 15px;">
+                    <div class="card-header bg-transparent border-0 p-4">
+                        <h4 class="fw-bold mb-0">
+                            <i class="fas fa-history me-2 text-success"></i>Historial de Vuelos
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if reservas %}
+                            {% for reserva in reservas %}
+                            <div class="d-flex align-items-center p-3 mb-3 rounded-3" style="background: rgba(102, 126, 234, 0.1);">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-plane text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="fw-bold mb-1">{{ reserva.vuelo.origen }} → {{ reserva.vuelo.destino }}</h6>
+                                    <p class="text-muted mb-1">{{ reserva.vuelo.fecha_salida|date:"d M Y" }} - {{ reserva.vuelo.hora_salida }}</p>
+                                    <small class="text-success">
+                                        <i class="fas fa-check-circle me-1"></i>{{ reserva.estado }}
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-primary">${{ reserva.precio_final }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-plane-slash fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No tienes vuelos registrados</h5>
+                                <p class="text-muted">¡Reserva tu primer vuelo con Aurora Airlines!</p>
+                                <a href="{% url 'reservar' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Reservar Vuelo
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Lateral -->
+            <div class="col-lg-4">
+                <!-- Acciones Rápidas -->
+                <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
+                    <div class="card-header bg-transparent border-0 p-4">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-bolt me-2 text-warning"></i>Acciones Rápidas
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'reservar' %}" class="btn btn-primary">
+                                <i class="fas fa-plane me-2"></i>Nueva Reserva
+                            </a>
+                            <a href="{% url 'mis_reservas' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-list me-2"></i>Mis Reservas
+                            </a>
+                            <a href="{% url 'check_in' %}" class="btn btn-outline-success">
+                                <i class="fas fa-check me-2"></i>Check-in Online
+                            </a>
+                            <a href="{% url 'soporte' %}" class="btn btn-outline-info">
+                                <i class="fas fa-headset me-2"></i>Soporte
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración de Cuenta -->
+                <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                    <div class="card-header bg-transparent border-0 p-4">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-cog me-2 text-secondary"></i>Configuración
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="list-group list-group-flush">
+                            <a href="{% url 'cambiar_password' %}" class="list-group-item list-group-item-action border-0 px-0">
+                                <i class="fas fa-key me-3 text-primary"></i>Cambiar Contraseña
+                            </a>
+                            <a href="{% url 'notificaciones' %}" class="list-group-item list-group-item-action border-0 px-0">
+                                <i class="fas fa-bell me-3 text-warning"></i>Notificaciones
+                            </a>
+                            <a href="{% url 'privacidad' %}" class="list-group-item list-group-item-action border-0 px-0">
+                                <i class="fas fa-shield-alt me-3 text-success"></i>Privacidad
+                            </a>
+                            <a href="{% url 'logout' %}" class="list-group-item list-group-item-action border-0 px-0 text-danger">
+                                <i class="fas fa-sign-out-alt me-3"></i>Cerrar Sesión
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #764ba2, #667eea);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.list-group-item-action:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+    border-radius: 8px;
+}
+</style>
+{% endblock %}
