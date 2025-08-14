@@ -54,5 +54,6 @@ urlpatterns = [
     # Reportes de pasajeros (solo admin)
     path('panel/reporte/pasajeros/<int:vuelo_id>/', reporte_pasajeros, name='reporte_pasajeros'),
     path('panel/reporte/pdf/<int:vuelo_id>/', exportar_reporte_pdf, name='exportar_reporte_pdf'),
+ 
     path('panel/reporte/csv/<int:vuelo_id>/', exportar_reporte_csv, name='exportar_reporte_csv'),
 ]

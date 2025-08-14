@@ -11,251 +11,332 @@
         --aurora-secondary: #1e40af;
         --aurora-accent: #3b82f6;
         --aurora-light: #eff6ff;
-        --aurora-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-        --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --aurora-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #1e3a8a 100%);
+        --aurora-gradient-soft: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
+        --shadow-soft: 0 10px 25px rgba(37, 99, 235, 0.15);
+        --shadow-medium: 0 15px 35px rgba(37, 99, 235, 0.2);
+        --shadow-strong: 0 25px 50px rgba(37, 99, 235, 0.3);
     }
 
     .reservation-container {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background: var(--aurora-gradient-soft);
         min-height: 100vh;
-        padding: 2rem 0;
-    }
-
-    .reservation-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: var(--shadow-medium);
-        overflow: hidden;
-        max-width: 800px;
-        margin: 0 auto;
-        position: relative;
-    }
-
-    .reservation-header {
-        background: var(--aurora-gradient);
-        color: white;
-        padding: 3rem 2rem 2rem;
-        text-align: center;
         position: relative;
         overflow: hidden;
     }
 
-    .reservation-header::before {
+    /* Elementos decorativos de fondo */
+    .reservation-container::before {
         content: '';
         position: absolute;
         top: -50%;
         left: -50%;
         width: 200%;
         height: 200%;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-        opacity: 0.1;
-        animation: float 20s ease-in-out infinite;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M50 15L60 35L80 35L65 50L70 70L50 60L30 70L35 50L20 35L40 35Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+        animation: float 30s linear infinite;
+        pointer-events: none;
     }
 
     @keyframes float {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-10px) rotate(180deg); }
+        0% { transform: translateX(0) translateY(0) rotate(0deg); }
+        100% { transform: translateX(-100px) translateY(-100px) rotate(360deg); }
     }
 
-    .reservation-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
+    .bg-aurora-gradient {
+        background: var(--aurora-gradient);
         position: relative;
-        z-index: 1;
+        overflow: hidden;
     }
 
-    .reservation-subtitle {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        position: relative;
-        z-index: 1;
-    }
-
-    .plane-icon {
+    .bg-aurora-gradient::before {
+        content: '';
         position: absolute;
-        top: 1rem;
-        right: 2rem;
-        font-size: 3rem;
-        opacity: 0.2;
-        transform: rotate(45deg);
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: shine 4s ease-in-out infinite;
     }
 
-    .form-container {
-        padding: 3rem 2rem;
+    @keyframes shine {
+        0%, 100% { left: -100%; }
+        50% { left: 100%; }
     }
 
-    .form-section {
-        background: #f8fafc;
-        border-radius: 15px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        border-left: 4px solid var(--aurora-primary);
-        transition: all 0.3s ease;
+    .bg-aurora-light {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     }
 
-    .form-section:hover {
-        transform: translateY(-2px);
+    .text-aurora-primary { color: var(--aurora-primary); }
+    .text-aurora-secondary { color: var(--aurora-secondary); }
+    .border-aurora { border-color: var(--aurora-primary) !important; }
+
+    .main-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: var(--shadow-medium);
+        border-radius: 25px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .main-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-strong);
+    }
+
+    .card-hover {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(37, 99, 235, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-hover::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--aurora-gradient);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-medium);
+        border-color: var(--aurora-accent);
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .card-hover:hover::before {
+        transform: scaleX(1);
+    }
+
+    .btn-aurora {
+        background: var(--aurora-gradient);
+        border: none;
+        color: white;
+        border-radius: 50px;
+        padding: 1rem 2.5rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-aurora::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .btn-aurora:hover {
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-strong);
+    }
+
+    .btn-aurora:hover::before {
+        left: 100%;
+    }
+
+    .btn-aurora-outline {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid var(--aurora-primary);
+        color: var(--aurora-primary);
+        border-radius: 50px;
+        padding: 1rem 2.5rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-aurora-outline:hover {
+        background: var(--aurora-primary);
+        color: white;
+        transform: translateY(-3px);
         box-shadow: var(--shadow-soft);
     }
 
-    .section-title {
-        display: flex;
-        align-items: center;
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: var(--aurora-secondary);
-        margin-bottom: 1.5rem;
-    }
-
-    .section-icon {
-        margin-right: 0.75rem;
-        font-size: 1.5rem;
-        color: var(--aurora-primary);
-    }
-
-    .custom-field {
-        margin-bottom: 1.5rem;
-    }
-
-    .custom-label {
-        display: block;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 0.5rem;
-        font-size: 0.95rem;
-    }
-
-    .custom-input, .custom-select, .custom-textarea {
-        width: 100%;
-        padding: 0.875rem 1rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 10px;
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 1rem 1.25rem;
         font-size: 1rem;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(5px);
+    }
+
+    .form-control:focus {
+        border-color: var(--aurora-primary);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15), var(--shadow-soft);
+        transform: translateY(-2px);
         background: white;
     }
 
-    .custom-input:focus, .custom-select:focus, .custom-textarea:focus {
-        outline: none;
+    .form-control.is-valid {
+        border-color: #10b981;
+        background: #f0fdf4;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background: var(--aurora-gradient);
         border-color: var(--aurora-primary);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        transform: translateY(-1px);
+        box-shadow: var(--shadow-soft);
     }
 
     .custom-checkbox {
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        background: white;
-        border-radius: 10px;
-        border: 2px solid #e5e7eb;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 1.25rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
-        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .custom-checkbox::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(37,99,235,0.1), transparent);
+        transition: left 0.5s ease;
     }
 
     .custom-checkbox:hover {
         border-color: var(--aurora-primary);
         background: var(--aurora-light);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-soft);
     }
 
-    .custom-checkbox input[type="checkbox"] {
-        margin-right: 0.75rem;
-        transform: scale(1.2);
+    .custom-checkbox:hover::before {
+        left: 100%;
     }
 
-    .error-message {
+    .section-icon {
+        font-size: 1.8rem;
+        background: var(--aurora-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 2px 4px rgba(37,99,235,0.3));
+        animation: pulse-icon 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-icon {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .plane-decoration {
+        position: absolute;
+        top: 1.5rem;
+        right: 2rem;
+        font-size: 4rem;
+        opacity: 0.2;
+        transform: rotate(45deg);
+        animation: fly 6s ease-in-out infinite;
+    }
+
+    @keyframes fly {
+        0%, 100% { transform: rotate(45deg) translateY(0); }
+        50% { transform: rotate(45deg) translateY(-15px); }
+    }
+
+    .alert {
+        border: none;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
         color: #dc2626;
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-        display: flex;
-        align-items: center;
+        border-left: 4px solid #dc2626;
     }
 
-    .warning-message {
+    .alert-warning {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
         color: #d97706;
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-        display: flex;
-        align-items: center;
-        background: #fef3c7;
-        padding: 0.75rem;
-        border-radius: 8px;
         border-left: 4px solid #f59e0b;
     }
 
-    .button-group {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin-top: 3rem;
-        flex-wrap: wrap;
-    }
-
-    .btn-primary {
-        background: var(--aurora-gradient);
-        color: white;
-        border: none;
-        padding: 1rem 2.5rem;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: var(--shadow-soft);
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-medium);
-        color: white;
-    }
-
-    .btn-secondary {
-        background: white;
-        color: var(--aurora-secondary);
-        border: 2px solid var(--aurora-primary);
-        padding: 1rem 2.5rem;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-secondary:hover {
-        background: var(--aurora-primary);
-        color: white;
-        transform: translateY(-2px);
-    }
-
-    .availability-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
+    .badge-success {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        color: #166534;
+        border: 1px solid #22c55e;
         font-size: 0.9rem;
         padding: 0.5rem 1rem;
-        border-radius: 20px;
-        margin-top: 0.5rem;
+        border-radius: 25px;
+        animation: pulse-badge 2s ease-in-out infinite;
     }
 
-    .status-available {
-        background: #dcfce7;
-        color: #166534;
+    @keyframes pulse-badge {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+        50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
     }
 
-    .status-limited {
-        background: #fef3c7;
-        color: #92400e;
+    .header-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        letter-spacing: -0.02em;
+        position: relative;
+        z-index: 2;
+    }
+
+    .header-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        font-weight: 300;
+        letter-spacing: 0.5px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Animaciones de entrada */
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-in {
+        animation: slideInUp 0.8s ease-out forwards;
     }
 
     @media (max-width: 768px) {
@@ -263,207 +344,258 @@
             padding: 1rem;
         }
         
-        .reservation-header {
-            padding: 2rem 1rem 1.5rem;
+        .header-title {
+            font-size: 2.5rem;
         }
         
-        .reservation-title {
-            font-size: 2rem;
+        .plane-decoration {
+            font-size: 3rem;
+            top: 1rem;
+            right: 1rem;
         }
         
-        .form-container {
-            padding: 2rem 1rem;
-        }
-        
-        .form-section {
-            padding: 1.5rem;
-        }
-        
-        .button-group {
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .btn-primary, .btn-secondary {
-            width: 100%;
-            max-width: 300px;
-            justify-content: center;
+        .btn-aurora, .btn-aurora-outline {
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="reservation-container">
-    <div class="reservation-card">
-        <div class="reservation-header">
-            <div class="plane-icon">✈️</div>
-            <h1 class="reservation-title">Reservar Asiento</h1>
-            <p class="reservation-subtitle">Complete los detalles de su reserva para volar con Aurora Airlines</p>
-        </div>
-
-        <div class="form-container">
-            <form method="POST">
-                {% csrf_token %}
-                
-                {% if form.non_field_errors %}
-                    <div class="form-section" style="border-left-color: #dc2626; background: #fef2f2;">
-                        {% for error in form.non_field_errors %}
-                            <div class="error-message">
-                                <span style="margin-right: 0.5rem;">⚠️</span>
-                                {{ error }}
-                            </div>
-                        {% endfor %}
+<div class="reservation-container py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <!-- Mejorado con efectos visuales y animaciones más sofisticadas -->
+                <div class="main-card shadow-lg border-0 overflow-hidden">
+                    <!-- Header mejorado -->
+                    <div class="bg-aurora-gradient text-white text-center py-5 position-relative">
+                        <div class="plane-decoration">✈️</div>
+                        <h1 class="header-title mb-3">Reservar Asiento</h1>
+                        <p class="header-subtitle mb-0">Complete los detalles de su reserva para volar con Aurora Airlines</p>
                     </div>
-                {% endif %}
 
-                <!-- Selección de vuelo -->
-                <div class="form-section">
-                    <h3 class="section-title">
-                        <span class="section-icon">🛫</span>
-                        Selección de Vuelo
-                    </h3>
-                    <div class="custom-field">
-                        <label class="custom-label">{{ form.vuelo.label }}</label>
-                        {{ form.vuelo|add_class:"custom-select" }}
-                        {% for error in form.vuelo.errors %}
-                            <div class="error-message">
-                                <span style="margin-right: 0.5rem;">❌</span>
-                                {{ error }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <!-- Selección de asiento -->
-                <div class="form-section">
-                    <h3 class="section-title">
-                        <span class="section-icon">💺</span>
-                        Selección de Asiento
-                    </h3>
-                    <div class="custom-field">
-                        <label class="custom-label">{{ form.asiento.label }}</label>
-                        {{ form.asiento|add_class:"custom-select" }}
-                        
-                        {% if form.asiento.errors %}
-                            {% for error in form.asiento.errors %}
-                                <div class="error-message">
-                                    <span style="margin-right: 0.5rem;">❌</span>
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            {% if form.asiento.queryset.count == 0 and form.vuelo.value %}
-                                <div class="warning-message">
-                                    <span style="margin-right: 0.5rem;">⚠️</span>
-                                    No hay asientos disponibles para este vuelo.
-                                </div>
-                            {% elif form.asiento.queryset.count > 0 %}
-                                <div class="availability-status status-available">
-                                    <span>✅</span>
-                                    {{ form.asiento.queryset.count }} asientos disponibles
+                    <!-- Form Body -->
+                    <div class="card-body p-4 p-md-5">
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger mb-4 animate-in" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <span class="mr-2">⚠️</span>
+                                        <div>
+                                            {% for error in form.non_field_errors %}
+                                                <div>{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
                                 </div>
                             {% endif %}
-                        {% endif %}
-                    </div>
-                </div>
 
-                <!-- Equipaje -->
-                <div class="form-section">
-                    <h3 class="section-title">
-                        <span class="section-icon">🧳</span>
-                        Equipaje
-                    </h3>
-                    
-                    <!-- Equipaje de mano -->
-                    <div class="custom-field">
-                        <label class="custom-checkbox">
-                            {{ form.equipaje_mano }}
-                            <span>{{ form.equipaje_mano.label }}</span>
-                        </label>
-                    </div>
-
-                    <!-- Equipaje de bodega -->
-                    <div class="custom-field">
-                        <label class="custom-label">{{ form.equipaje_bodega.label }}</label>
-                        {{ form.equipaje_bodega|add_class:"custom-input" }}
-                        {% for error in form.equipaje_bodega.errors %}
-                            <div class="error-message">
-                                <span style="margin-right: 0.5rem;">❌</span>
-                                {{ error }}
+                            <!-- Selección de vuelo -->
+                            <div class="card card-hover mb-4 border-left border-aurora border-left-4 animate-in">
+                                <div class="card-body">
+                                    <h5 class="card-title text-aurora-secondary mb-4 d-flex align-items-center">
+                                        <span class="section-icon mr-3">🛫</span>
+                                        <span class="font-weight-bold">Selección de Vuelo</span>
+                                    </h5>
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-dark mb-3">{{ form.vuelo.label }}</label>
+                                        {{ form.vuelo|add_class:"form-control form-control-lg" }}
+                                        {% for error in form.vuelo.errors %}
+                                            <div class="invalid-feedback d-block mt-2">
+                                                <span class="mr-2">❌</span>{{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             </div>
-                        {% endfor %}
+
+                            <!-- Selección de asiento -->
+                            <div class="card card-hover mb-4 border-left border-aurora border-left-4 animate-in">
+                                <div class="card-body">
+                                    <h5 class="card-title text-aurora-secondary mb-4 d-flex align-items-center">
+                                        <span class="section-icon mr-3">💺</span>
+                                        <span class="font-weight-bold">Selección de Asiento</span>
+                                    </h5>
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-dark mb-3">{{ form.asiento.label }}</label>
+                                        {{ form.asiento|add_class:"form-control form-control-lg" }}
+                                        
+                                        {% if form.asiento.errors %}
+                                            {% for error in form.asiento.errors %}
+                                                <div class="invalid-feedback d-block mt-2">
+                                                    <span class="mr-2">❌</span>{{ error }}
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            {% if form.asiento.queryset.count == 0 and form.vuelo.value %}
+                                                <div class="alert alert-warning mt-3 py-2" role="alert">
+                                                    <small class="d-flex align-items-center">
+                                                        <span class="mr-2">⚠️</span>
+                                                        No hay asientos disponibles para este vuelo.
+                                                    </small>
+                                                </div>
+                                            {% elif form.asiento.queryset.count > 0 %}
+                                                <div class="mt-3">
+                                                    <span class="badge badge-success d-inline-flex align-items-center">
+                                                        <span class="mr-2">✅</span>
+                                                        {{ form.asiento.queryset.count }} asientos disponibles
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Equipaje -->
+                            <div class="card card-hover mb-4 border-left border-aurora border-left-4 animate-in">
+                                <div class="card-body">
+                                    <h5 class="card-title text-aurora-secondary mb-4 d-flex align-items-center">
+                                        <span class="section-icon mr-3">🧳</span>
+                                        <span class="font-weight-bold">Equipaje</span>
+                                    </h5>
+                                    
+                                    <!-- Equipaje de mano -->
+                                    <div class="custom-control custom-checkbox custom-checkbox mb-4">
+                                        {{ form.equipaje_mano|add_class:"custom-control-input" }}
+                                        <label class="custom-control-label font-weight-semibold" for="{{ form.equipaje_mano.id_for_label }}">
+                                            {{ form.equipaje_mano.label }}
+                                        </label>
+                                    </div>
+
+                                    <!-- Equipaje de bodega -->
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-dark mb-3">{{ form.equipaje_bodega.label }}</label>
+                                        {{ form.equipaje_bodega|add_class:"form-control form-control-lg" }}
+                                        {% for error in form.equipaje_bodega.errors %}
+                                            <div class="invalid-feedback d-block mt-2">
+                                                <span class="mr-2">❌</span>{{ error }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Requerimientos especiales -->
+                            <div class="card card-hover mb-4 border-left border-aurora border-left-4 animate-in">
+                                <div class="card-body">
+                                    <h5 class="card-title text-aurora-secondary mb-4 d-flex align-items-center">
+                                        <span class="section-icon mr-3">📝</span>
+                                        <span class="font-weight-bold">Requerimientos Especiales</span>
+                                    </h5>
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-dark mb-3">{{ form.requerimientos_especiales.label }}</label>
+                                        {{ form.requerimientos_especiales|add_class:"form-control" }}
+                                        <small class="form-text text-muted mt-3 font-italic">
+                                            Indique cualquier necesidad especial como asistencia médica, dieta especial, etc.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones mejorados -->
+                            <div class="text-center mt-5">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3 mb-md-0">
+                                        <button type="submit" class="btn btn-aurora btn-lg btn-block">
+                                            <span class="mr-2">✈️</span>
+                                            Confirmar Reserva
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <a href="{% url 'vuelos_disponibles' %}" class="btn btn-aurora-outline btn-lg btn-block">
+                                            <span class="mr-2">↩️</span>
+                                            Cancelar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-
-                <!-- Requerimientos especiales -->
-                <div class="form-section">
-                    <h3 class="section-title">
-                        <span class="section-icon">📝</span>
-                        Requerimientos Especiales
-                    </h3>
-                    <div class="custom-field">
-                        <label class="custom-label">{{ form.requerimientos_especiales.label }}</label>
-                        {{ form.requerimientos_especiales|add_class:"custom-textarea" }}
-                        <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem; display: block;">
-                            Indique cualquier necesidad especial como asistencia médica, dieta especial, etc.
-                        </small>
-                    </div>
-                </div>
-
-                <!-- Botones -->
-                <div class="button-group">
-                    <button type="submit" class="btn-primary">
-                        <span>✈️</span>
-                        Confirmar Reserva
-                    </button>
-                    <a href="{% url 'vuelos_disponibles' %}" class="btn-secondary">
-                        <span>↩️</span>
-                        Cancelar
-                    </a>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-// Agregar interactividad suave
 document.addEventListener('DOMContentLoaded', function() {
-    // Animación de entrada para las secciones
-    const sections = document.querySelectorAll('.form-section');
-    sections.forEach((section, index) => {
-        section.style.opacity = '0';
-        section.style.transform = 'translateY(20px)';
+    // Animación de entrada escalonada para las cards
+    const cards = document.querySelectorAll('.animate-in');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(40px)';
         setTimeout(() => {
-            section.style.transition = 'all 0.6s ease';
-            section.style.opacity = '1';
-            section.style.transform = 'translateY(0)';
-        }, index * 150);
+            card.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
+
+    // Validación visual mejorada para inputs
+    const inputs = document.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateY(-2px)';
+        });
+
+        input.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateY(0)';
+            
+            if (this.value.trim() !== '') {
+                this.classList.add('is-valid');
+                this.classList.remove('is-invalid');
+            } else {
+                this.classList.remove('is-valid', 'is-invalid');
+            }
+        });
+
+        // Efecto de escritura
+        input.addEventListener('input', function() {
+            this.style.borderColor = 'var(--aurora-primary)';
+            this.style.backgroundColor = 'white';
+        });
     });
 
     // Mejorar la experiencia del checkbox
-    const checkboxes = document.querySelectorAll('.custom-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('click', function(e) {
+    const checkboxContainers = document.querySelectorAll('.custom-checkbox');
+    checkboxContainers.forEach(container => {
+        container.addEventListener('click', function(e) {
             if (e.target.tagName !== 'INPUT') {
                 const input = this.querySelector('input[type="checkbox"]');
                 input.checked = !input.checked;
+                
+                // Animación de confirmación
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
             }
         });
     });
 
-    // Validación visual en tiempo real
-    const inputs = document.querySelectorAll('.custom-input, .custom-select, .custom-textarea');
-    inputs.forEach(input => {
-        input.addEventListener('blur', function() {
-            if (this.value.trim() !== '') {
-                this.style.borderColor = '#10b981';
-                this.style.backgroundColor = '#f0fdf4';
-            } else {
-                this.style.borderColor = '#e5e7eb';
-                this.style.backgroundColor = 'white';
-            }
+    // Efecto parallax sutil en el header
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const header = document.querySelector('.bg-aurora-gradient');
+        if (header) {
+            header.style.transform = `translateY(${scrolled * 0.3}px)`;
+        }
+    });
+
+    // Efecto de partículas en hover de botones
+    const buttons = document.querySelectorAll('.btn-aurora, .btn-aurora-outline');
+    buttons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px) scale(1.02)';
+        });
+
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
         });
     });
 });
