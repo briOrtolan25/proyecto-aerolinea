@@ -10,6 +10,7 @@ Este proyecto es un sistema para la gestión de **aviones, vuelos, asientos, pas
 - pip (gestor de paquetes de Python)
 - Virtualenv (recomendado)
 - SQLite (incluido en Python)
+  
 
 ---
 
