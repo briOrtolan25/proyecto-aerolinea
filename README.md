@@ -51,3 +51,6 @@ python manage.py shell
 
 # Ejecutar el servidor
 python manage.py runserver
+
+
+Usuario Admin: Aurora1 Contraseña: TuPassword123
